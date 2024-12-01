@@ -11,6 +11,7 @@ import {
 import { tagTypes } from '@/redux/tag-types';
 import useToaster from '@/hooks/useToaster';
 import BookingModal from '@/components/home/booking-modal';
+import withAdmin from '@/HOC/withAdmin';
 
 const BookingList = () => {
     const { data: bookingData, isLoading: isBookingLoading } = useFetchResourceQuery({
@@ -82,4 +83,4 @@ const BookingList = () => {
     );
 };
 
-export default BookingList;
+export default withAdmin(BookingList);

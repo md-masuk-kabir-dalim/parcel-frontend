@@ -7,6 +7,7 @@ import { authRoutes } from '@/constants/end-point';
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { tagTypes } from '@/redux/tag-types';
+import withAdmin from '@/HOC/withAdmin';
 
 const CreateTrainer = () => {
     const [createTrainer, { isLoading: isCreateLoading }] = useCreateResourceMutation();
@@ -120,4 +121,4 @@ const CreateTrainer = () => {
     );
 };
 
-export default CreateTrainer;
+export default withAdmin(CreateTrainer);

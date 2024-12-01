@@ -3,6 +3,7 @@ import Input from '@/components/common/input';
 import Loading from '@/components/shared/loading';
 import { Button } from '@/components/ui/button';
 import { authRoutes, classScheduleRoutes } from '@/constants/end-point';
+import withAdmin from '@/HOC/withAdmin';
 import useToaster from '@/hooks/useToaster';
 import { useUpdateResourceMutation, useFetchResourceQuery } from '@/redux/api/curd';
 import { tagTypes } from '@/redux/tag-types';
@@ -165,4 +166,4 @@ const EditClassSchedule: React.FC<{ scheduleId: string }> = ({ scheduleId }) => 
     );
 };
 
-export default EditClassSchedule;
+export default withAdmin(EditClassSchedule);

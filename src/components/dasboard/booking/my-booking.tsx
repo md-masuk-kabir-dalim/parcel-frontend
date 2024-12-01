@@ -2,6 +2,7 @@
 import BookingCard from '@/components/shared/card/booking-card';
 import Loading from '@/components/shared/loading';
 import { bookingRoutes } from '@/constants/end-point';
+import withAuth from '@/HOC/withAuth';
 import { useFetchResourceQuery } from '@/redux/api/curd';
 import { useAppSelector } from '@/redux/hooks';
 import { tagTypes } from '@/redux/tag-types';
@@ -21,4 +22,4 @@ const MyBookingList = () => {
     return <BookingCard bookings={bookingData?.data} title='Your Bookings' />;
 };
 
-export default MyBookingList;
+export default withAuth(MyBookingList);

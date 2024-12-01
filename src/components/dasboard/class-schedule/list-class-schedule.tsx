@@ -3,6 +3,8 @@ import ClassScheduleCard from '@/components/shared/card/admin-class-schedule-car
 import Loading from '@/components/shared/loading';
 import { Button } from '@/components/ui/button';
 import { classScheduleRoutes } from '@/constants/end-point';
+import withAdmin from '@/HOC/withAdmin';
+import withAuth from '@/HOC/withAuth';
 import useToaster from '@/hooks/useToaster';
 import { useDeleteResourceMutation, useFetchResourceQuery } from '@/redux/api/curd';
 import { useAppSelector } from '@/redux/hooks';
@@ -40,9 +42,11 @@ const ListClassSchedule = () => {
         <section className='p-6 bg-white rounded-lg shadow min-h-screen'>
             <div className='flex justify-between items-center mb-6'>
                 <h1 className='text-3xl font-bold text-black'>Class Schedule List</h1>
-                <Link href={'/dashboard/class-schedule/create-class-schedule'}>
-                    <Button className='text-white-light'>Create Class Schedule</Button>
-                </Link>
+                {user?.role === 'admin' && (
+                    <Link href={'/dashboard/class-schedule/create-class-schedule'}>
+                        <Button className='text-white-light'>Create Class Schedule</Button>
+                    </Link>
+                )}
             </div>
 
             <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6'>
@@ -63,4 +67,4 @@ const ListClassSchedule = () => {
     );
 };
 
-export default ListClassSchedule;
+export default withAuth(ListClassSchedule);

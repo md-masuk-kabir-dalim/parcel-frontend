@@ -8,6 +8,7 @@ import React, { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { tagTypes } from '@/redux/tag-types';
 import Loading from '@/components/shared/loading';
+import withAdmin from '@/HOC/withAdmin';
 
 const EditTrainer = ({ trainerId }: { trainerId: string }) => {
     const [updateTrainer, { isLoading: isUpdateLoading }] = useUpdateResourceMutation();
@@ -113,4 +114,4 @@ const EditTrainer = ({ trainerId }: { trainerId: string }) => {
     );
 };
 
-export default EditTrainer;
+export default withAdmin(EditTrainer);

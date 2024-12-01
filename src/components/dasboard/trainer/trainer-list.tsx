@@ -3,6 +3,7 @@ import TrainerCard from '@/components/shared/card/trainer-card';
 import Loading from '@/components/shared/loading';
 import { Button } from '@/components/ui/button';
 import { authRoutes } from '@/constants/end-point';
+import withAdmin from '@/HOC/withAdmin';
 import useToaster from '@/hooks/useToaster';
 import { useDeleteResourceMutation, useFetchResourceQuery } from '@/redux/api/curd';
 import { tagTypes } from '@/redux/tag-types';
@@ -57,4 +58,4 @@ const TrainerList = () => {
     );
 };
 
-export default TrainerList;
+export default withAdmin(TrainerList);

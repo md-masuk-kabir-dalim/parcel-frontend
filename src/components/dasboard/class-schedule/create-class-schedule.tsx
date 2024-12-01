@@ -3,6 +3,7 @@ import Input from '@/components/common/input';
 import Loading from '@/components/shared/loading';
 import { Button } from '@/components/ui/button';
 import { authRoutes, classScheduleRoutes } from '@/constants/end-point';
+import withAuth from '@/HOC/withAuth';
 import useToaster from '@/hooks/useToaster';
 import { useCreateResourceMutation, useFetchResourceQuery } from '@/redux/api/curd';
 import { tagTypes } from '@/redux/tag-types';
@@ -141,4 +142,4 @@ const CreateClassSchedule: React.FC = () => {
     );
 };
 
-export default CreateClassSchedule;
+export default withAuth(CreateClassSchedule);
