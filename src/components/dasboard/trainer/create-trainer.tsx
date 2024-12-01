@@ -6,6 +6,7 @@ import { useCreateResourceMutation } from '@/redux/api/curd';
 import { authRoutes } from '@/constants/end-point';
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { tagTypes } from '@/redux/tag-types';
 
 const CreateTrainer = () => {
     const [createTrainer, { isLoading: isCreateLoading }] = useCreateResourceMutation();
@@ -19,6 +20,7 @@ const CreateTrainer = () => {
             // Send data to the backend API
             await createTrainer({
                 url: authRoutes.register,
+                tags: tagTypes.auth,
                 payload: data
             });
             showToast('success', 'Trainer created successfully!');

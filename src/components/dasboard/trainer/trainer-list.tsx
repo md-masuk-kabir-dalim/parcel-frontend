@@ -14,7 +14,7 @@ const TrainerList = () => {
     const showToast = useToaster();
     const { data: trainerData, isLoading } = useFetchResourceQuery({
         url: authRoutes.get_all_user,
-        tags: tagTypes.class_schedule,
+        tags: tagTypes.auth,
         params: { role: 'trainer' }
     });
 
