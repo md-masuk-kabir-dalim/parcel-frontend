@@ -1,16 +1,37 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
-import BookingModal from '@/components/home/booking-modal';
+import { useAppSelector } from '@/redux/hooks';
+import { useCreateResourceMutation } from '@/redux/api/curd';
+import { bookingRoutes } from '@/constants/end-point';
+import { tagTypes } from '@/redux/tag-types';
+import useToaster from '@/hooks/useToaster';
 
 const ClassScheduleCard: React.FC<ClassScheduleProps> = ({ schedules, isAuthenticated }) => {
     const router = useRouter();
-    const [isOpenModal, setIsOpenModal] = useState(false);
+    const showToast = useToaster();
+    const { user } = useAppSelector((state) => state.auth);
+    const [createBooking, { isLoading: isCreateLoading }] = useCreateResourceMutation();
+
     // Function to handle booking attempt
-    const handleBookingClick = (scheduleId: string) => {
+    const handleBookingClick = async (scheduleId: string) => {
         if (!isAuthenticated) {
             router.push('/login');
         } else {
-            setIsOpenModal(true);
+            try {
+                const payload = {
+                    traineeId: user?.id,
+                    classScheduleId: scheduleId,
+                    status: 'booked'
+                };
+                await createBooking({
+                    url: bookingRoutes.create,
+                    tags: tagTypes.booking,
+                    payload: payload
+                }).unwrap();
+                showToast('success', 'Booking successful');
+            } catch (error: any) {
+                showToast('error', error?.message || error?.data?.message);
+            }
         }
     };
 
@@ -82,22 +103,15 @@ const ClassScheduleCard: React.FC<ClassScheduleProps> = ({ schedules, isAuthenti
                                 onClick={() => handleBookingClick(schedule._id)}
                             >
                                 {schedule.bookedTrainees < schedule.maxTrainees
-                                    ? 'Book Now'
+                                    ? isCreateLoading
+                                        ? 'Loading...'
+                                        : 'Book Now'
                                     : 'Fully Booked'}
                             </button>
                         </div>
                     </div>
                 ))}
             </div>
-            {isOpenModal && (
-                <BookingModal
-                    isOpenModal={isOpenModal}
-                    setIsOpenModal={setIsOpenModal}
-                    schedules={schedules}
-                    isAuthenticated={isAuthenticated}
-                    // selectedSchedule={selectedSchedule}
-                />
-            )}
         </div>
     );
 };

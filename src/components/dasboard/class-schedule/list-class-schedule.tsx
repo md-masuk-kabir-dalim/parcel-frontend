@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { classScheduleRoutes } from '@/constants/end-point';
 import useToaster from '@/hooks/useToaster';
 import { useDeleteResourceMutation, useFetchResourceQuery } from '@/redux/api/curd';
+import { useAppSelector } from '@/redux/hooks';
 import { tagTypes } from '@/redux/tag-types';
 import Link from 'next/link';
 import React from 'react';
@@ -12,9 +13,11 @@ import React from 'react';
 const ListClassSchedule = () => {
     const [deleteClassSchedule] = useDeleteResourceMutation();
     const showToast = useToaster();
+    const { user } = useAppSelector((state) => state.auth);
     const { data, isLoading } = useFetchResourceQuery({
         url: classScheduleRoutes.getAll,
-        tags: tagTypes.class_schedule
+        tags: tagTypes.class_schedule,
+        params: user?.role === 'trainer' ? { trainerId: user?.id } : {}
     });
 
     const handleDeleteClassSchedule = async (id: string) => {

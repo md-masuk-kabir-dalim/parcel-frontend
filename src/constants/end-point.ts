@@ -1,6 +1,8 @@
 const rootRoutes = '/api/v1';
 const rootAuthRoute = `${rootRoutes}/auth`;
 const rootClassScheduleRoute = `${rootRoutes}/class-schedule`;
+const rootBookingRoute = `${rootRoutes}/booking`;
+
 const rootWebSiteInfoRoutes = `${rootRoutes}/website-info`;
 const rootCanonicalRoutes = 'get-canonicalUrl';
 const rootMailRoutes = `${rootRoutes}/mail/`;
@@ -35,4 +37,12 @@ export const classScheduleRoutes = {
     delete: (id: string) => `${rootClassScheduleRoute}/${id}`,
     getById: (id: string) => `${rootClassScheduleRoute}/${id}`,
     update: (id: string) => `${rootClassScheduleRoute}/${id}`
+};
+
+//booking
+export const bookingRoutes = {
+    create: rootBookingRoute,
+    get: rootBookingRoute,
+    updateById: (id: string) => `${rootBookingRoute}/${id}`,
+    deleteById: (id: string) => `${rootBookingRoute}/${id}`
 };
