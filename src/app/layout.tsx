@@ -40,7 +40,7 @@ export default async function RootLayout({
             <Toaster />
             <body
                 className={cn(
-                    'antialiased dark bg-background',
+                    'antialiased dark bg-background p-2',
                     geistSans.variable,
                     geistMono.variable
                 )}

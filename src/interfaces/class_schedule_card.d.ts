@@ -9,7 +9,8 @@ type ClassSchedule = {
 
 type ClassScheduleProps = {
     schedules: ClassSchedule[],
-    isAuthenticated: boolean
+    isAuthenticated: boolean,
+    bookingData: any[]
 };
 
 interface BookingModalProps {

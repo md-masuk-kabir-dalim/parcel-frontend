@@ -29,6 +29,13 @@ const Sidebar: React.FC<SidebarProps> = () => {
                         </Link>
                     </li>
                     <li>
+                        <Link href='/dashboard/class-schedule'>
+                            <p className='block py-2 px-4 rounded hover:bg-blue hover:text-white-light transition'>
+                                Class List
+                            </p>
+                        </Link>
+                    </li>
+                    <li>
                         <Link href='/dashboard/trainer'>
                             <p className='block py-2 px-4 rounded hover:bg-blue hover:text-white-light transition'>
                                 Trainer
@@ -36,9 +43,16 @@ const Sidebar: React.FC<SidebarProps> = () => {
                         </Link>
                     </li>
                     <li>
-                        <Link href='/dashboard/help'>
+                        <Link href='/dashboard/booking'>
                             <p className='block py-2 px-4 rounded hover:bg-blue hover:text-white-light transition'>
-                                Help
+                                Booking
+                            </p>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link href='/dashboard/my-booking'>
+                            <p className='block py-2 px-4 rounded hover:bg-blue hover:text-white-light transition'>
+                                My Booking
                             </p>
                         </Link>
                     </li>
