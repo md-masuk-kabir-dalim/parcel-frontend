@@ -31,16 +31,15 @@ const Sidebar: React.FC<SidebarProps> = () => {
                             </p>
                         </Link>
                     </li>
-                    {user?.role === 'admin' ||
-                        (user?.role === 'trainer' && (
-                            <li>
-                                <Link href='/dashboard/class-schedule'>
-                                    <p className='block py-2 px-4 rounded hover:bg-blue hover:text-white-light transition'>
-                                        Class schedule
-                                    </p>
-                                </Link>
-                            </li>
-                        ))}
+                    {(user?.role === 'admin' || user?.role === 'trainer') && (
+                        <li>
+                            <Link href='/dashboard/class-schedule'>
+                                <p className='block py-2 px-4 rounded hover:bg-blue hover:text-white-light transition'>
+                                    Class schedule
+                                </p>
+                            </Link>
+                        </li>
+                    )}
                     {user?.role === 'admin' && (
                         <li>
                             <Link href='/dashboard/trainer'>
