@@ -41,21 +41,21 @@ const ClassScheduleCard: React.FC<ClassScheduleCardProps> = ({
 
             {/* Class Details */}
             <div className='space-y-3'>
-                <p className='flex items-center text-gray-700'>
+                <p className='flex items-center text-black'>
                     <FaUserTie className='mr-2 text-blue' />
                     <strong>Trainer:</strong> <span className='ml-2'>{trainer}</span>
                 </p>
-                <p className='flex items-center text-gray-700'>
+                <p className='flex items-center text-black'>
                     <FaCalendarAlt className='mr-2 text-blue' />
                     <strong>Day:</strong>
                     <span className='ml-2'>{new Date(day).toLocaleDateString()}</span>
                 </p>
-                <p className='flex items-center text-gray-700'>
+                <p className='flex items-center text-black'>
                     <FaUsers className='mr-2 text-blue' />
                     <strong>Max Trainees:</strong>
                     <span className='ml-2'>{maxTrainees}</span>
                 </p>
-                <p className='flex items-center text-gray-700'>
+                <p className='flex items-center text-black'>
                     <FaUserCheck className='mr-2 text-blue' />
                     <strong>Booked Trainees:</strong>
                     <span className='ml-2'>{bookedTrainees}</span>
@@ -65,14 +65,14 @@ const ClassScheduleCard: React.FC<ClassScheduleCardProps> = ({
             {/* Action Buttons */}
             <div className='mt-6 flex justify-between'>
                 <Link href={`/dashboard/class-schedule/edit-class-schedule/${id}`}>
-                    <button className='flex items-center px-4 py-2 bg-blue text-white rounded-lg hover:bg-blue-600 transition-colors'>
+                    <button className='flex items-center px-4 py-2 bg-blue text-white-light rounded-lg hover:bg-blue-600 transition-colors'>
                         <FaEdit className='mr-2' />
                         Edit
                     </button>
                 </Link>
                 <button
                     onClick={onDelete}
-                    className='flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors'
+                    className='flex items-center px-4 py-2 bg-red-500 text-white-light rounded-lg hover:bg-red-600 transition-colors'
                 >
                     <FaTrashAlt className='mr-2' />
                     Delete
