@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAppSelector } from '@/redux/hooks';
 
@@ -7,6 +7,18 @@ interface SidebarProps {}
 
 const Sidebar: React.FC<SidebarProps> = () => {
     const { user } = useAppSelector((state) => state.auth);
+    const [isClient, setIsClient] = useState(false);
+
+    // Only run on the client side
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+    if (!isClient) {
+        // Render nothing (or a loading spinner) until client-side data is available
+        return null;
+    }
+
     return (
         <aside className='w-64 bg-white text-black shadow-lg flex flex-col h-screen'>
             {/* Header */}
@@ -61,6 +73,7 @@ const Sidebar: React.FC<SidebarProps> = () => {
                     </li>
                 </ul>
             </nav>
+
             {/* Footer */}
             <div className='p-4 border-t border-gray-700 text-center text-sm'>© 2024 MyApp</div>
         </aside>
