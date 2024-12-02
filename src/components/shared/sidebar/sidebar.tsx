@@ -9,16 +9,11 @@ const Sidebar: React.FC<SidebarProps> = () => {
     const { user } = useAppSelector((state) => state.auth);
     const [isClient, setIsClient] = useState(false);
 
-    // Only run on the client side
     useEffect(() => {
         setIsClient(true);
     }, []);
 
-    if (!isClient) {
-        // Render nothing (or a loading spinner) until client-side data is available
-        return null;
-    }
-
+    if (!isClient) return null;
     return (
         <aside className='w-64 bg-white text-black shadow-lg flex flex-col h-screen'>
             {/* Header */}
@@ -64,13 +59,15 @@ const Sidebar: React.FC<SidebarProps> = () => {
                             </Link>
                         </li>
                     )}
-                    <li>
-                        <Link href='/dashboard/my-booking'>
-                            <p className='block py-2 px-4 rounded hover:bg-blue hover:text-white-light transition'>
-                                My Booking
-                            </p>
-                        </Link>
-                    </li>
+                    {user?.role === 'trainee' && (
+                        <li>
+                            <Link href='/dashboard/my-booking'>
+                                <p className='block py-2 px-4 rounded hover:bg-blue hover:text-white-light transition'>
+                                    My Booking
+                                </p>
+                            </Link>
+                        </li>
+                    )}
                 </ul>
             </nav>
 

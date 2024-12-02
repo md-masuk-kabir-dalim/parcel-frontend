@@ -1,15 +1,19 @@
 import { useAppSelector } from '@/redux/hooks';
 import { useRouter } from 'next/navigation';
-import React, { ComponentType } from 'react';
+import React, { useEffect } from 'react';
 
-const withAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
+const withAuth = <P extends object>(WrappedComponent: React.ComponentType<P>) => {
     const AuthComponent: React.FC<P> = (props) => {
         const { isAuthenticated } = useAppSelector((state) => state.auth);
         const router = useRouter();
 
+        useEffect(() => {
+            if (!isAuthenticated) {
+                router.push('/login');
+            }
+        }, [isAuthenticated, router]);
+
         if (!isAuthenticated) {
-            // If the user is not authenticated, redirect to the login page
-            router.push('/login');
             return null;
         }
 

@@ -1,27 +1,26 @@
-'use client';
 import { useAppSelector } from '@/redux/hooks';
 import { useRouter } from 'next/navigation';
-import React, { ComponentType } from 'react';
+import React, { useEffect } from 'react';
 
 interface WithRoleOptions {
     requiredRole: string;
 }
 
 const withRole = <P extends object>(
-    WrappedComponent: ComponentType<P>,
+    WrappedComponent: React.ComponentType<P>,
     { requiredRole }: WithRoleOptions
 ) => {
     const RoleComponent: React.FC<P> = (props) => {
         const { user, isAuthenticated } = useAppSelector((state) => state.auth);
         const router = useRouter();
 
-        if (!isAuthenticated) {
-            router.push('/login');
-            return null;
-        }
+        useEffect(() => {
+            if (!isAuthenticated || user?.role !== requiredRole) {
+                router.push('/login');
+            }
+        }, [isAuthenticated, user, requiredRole, router]);
 
-        if (user?.role !== requiredRole) {
-            router.push('/login');
+        if (!isAuthenticated || user?.role !== requiredRole) {
             return null;
         }
 
