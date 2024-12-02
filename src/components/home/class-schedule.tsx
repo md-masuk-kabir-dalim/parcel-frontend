@@ -11,7 +11,7 @@ const ClassSchedule = () => {
     const { user, isAuthenticated } = useAppSelector((state) => state.auth);
     const { data, isLoading } = useFetchResourceQuery({
         url: classScheduleRoutes.getAll,
-        tags: tagTypes.class_schedule
+        tags: [tagTypes.class_schedule, tagTypes.booking]
     });
 
     const { data: bookingData, isLoading: isBookingLoading } = useFetchResourceQuery({

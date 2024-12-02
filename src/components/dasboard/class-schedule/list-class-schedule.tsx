@@ -49,7 +49,7 @@ const ListClassSchedule = () => {
                 )}
             </div>
 
-            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6'>
                 {data?.data?.map((schedule: any) => (
                     <ClassScheduleCard
                         key={schedule._id}
