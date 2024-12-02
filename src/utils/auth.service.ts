@@ -1,3 +1,4 @@
+'use client';
 import { decodedToken } from './jwt';
 import { getFromLocalStorage, setToLocalStorage, removeFromLocalStorage } from './local-storage';
 
@@ -6,7 +7,7 @@ export const storeUserInfo = ({ accessToken }: { accessToken: string }) => {
 };
 
 export const getUserInfo = () => {
-    const authToken = getFromLocalStorage('accessToken');
+    const authToken = getFromLocalStorage('token');
     if (authToken) {
         const decodedData = decodedToken(authToken);
         return decodedData ? { token: authToken, ...decodedData } : null;

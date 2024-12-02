@@ -1,9 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { tagTypesList } from '../tag-types';
 import { envConfig } from '@/lib/helpers/envConfig';
-const getAuthToken = () => {
-    return localStorage.getItem('token');
-};
+import { getAuthToken } from '@/utils/helper/get_auth_token';
 
 export const baseApi = createApi({
     reducerPath: 'api',

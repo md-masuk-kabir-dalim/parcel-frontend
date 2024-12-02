@@ -1,4 +1,3 @@
-// Navigation links for the navbar
 export const navLinks = [
     { name: 'Home', href: '/', key: 'home' },
     { name: 'Reviews', href: '/reviews', key: 'reviews' },

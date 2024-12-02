@@ -1,3 +1,4 @@
+'use client';
 import { toggleTheme } from '@/redux/features/slice/ThemeSlice';
 import { RootState } from '@/redux/store';
 import { useEffect } from 'react';
