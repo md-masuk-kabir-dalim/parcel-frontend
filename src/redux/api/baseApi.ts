@@ -10,8 +10,9 @@ export const baseApi = createApi({
         prepareHeaders: (headers) => {
             const token = getAuthToken();
             if (token) {
-                headers.set('Authorization', `Bearer ${token}`);
+                headers.set('Authorization', `${token}`);
             }
+            headers.set('x-api-key', `${envConfig.api_key}`);
             return headers;
         }
     }),

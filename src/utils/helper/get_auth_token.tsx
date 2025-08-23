@@ -1,7 +1,6 @@
-'use client';
+import Cookies from 'js-cookie';
+
 export const getAuthToken = () => {
-    if (typeof window !== 'undefined') {
-        return localStorage.getItem('token');
-    }
-    return null;
+    const token = Cookies?.get('token');
+    return token;
 };

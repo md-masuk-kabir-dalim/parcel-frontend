@@ -26,10 +26,10 @@ const Login = () => {
             email: '',
             password: ''
         },
-        mode: 'onBlur' // advanced validation trigger
+        mode: 'onBlur'
     });
 
-    const { handleSubmit, formState } = methods;
+    const { handleSubmit } = methods;
     const [loginUser, { isLoading }] = useCreateResourceMutation();
 
     const onSubmit = async (data: FormData) => {
@@ -40,7 +40,7 @@ const Login = () => {
                 payload: data
             }).unwrap();
 
-            dispatch(setAuth({ token: response.token, user: response.user }));
+            dispatch(setAuth({ token: response.result?.accessToken }));
             showTost('success', 'Login successful!');
             router.push('/dashboard');
         } catch (error: any) {

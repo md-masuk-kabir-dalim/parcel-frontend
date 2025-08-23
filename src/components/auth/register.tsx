@@ -1,16 +1,16 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { Button } from '../ui/button';
 import Input from '../common/input';
 import useToaster from '@/hooks/useToaster';
 import { useCreateResourceMutation } from '@/redux/api/curd';
-import { authRoutes } from '@/constants/end-point';
+import { usersRoutes } from '@/constants/end-point';
 import { tagTypes } from '@/redux/tag-types';
-import SelectBox from '../common/select_box';
+import { setAuth } from '@/redux/features/slice/authSlice';
+import { useDispatch } from 'react-redux';
 
-// ✅ Define your own form type
 type RegisterFormValues = {
     username: string,
     email: string,
@@ -22,8 +22,8 @@ type RegisterFormValues = {
 const Register = () => {
     const showToast = useToaster();
     const navigate = useRouter();
+    const dispatch = useDispatch();
 
-    // ✅ Pass custom type to useForm
     const methods = useForm<RegisterFormValues>({
         defaultValues: {
             username: '',
@@ -37,17 +37,18 @@ const Register = () => {
     const [registerUser, { isLoading }] = useCreateResourceMutation();
     const { handleSubmit } = methods;
 
-    // ✅ `data` now properly typed
     const onSubmit = async (data: RegisterFormValues) => {
         try {
             const payload = { ...data };
-            await registerUser({
-                url: authRoutes.register,
+            const response = await registerUser({
+                url: usersRoutes.create,
                 tags: tagTypes.auth,
                 payload
             }).unwrap();
+
+            dispatch(setAuth({ token: response.result?.verifyToken }));
             showToast('success', 'Registration successful!');
-            navigate.push('/login');
+            navigate.push('/auth/otp');
         } catch (error: any) {
             showToast('error', error.data?.message || 'Registration failed!');
         }

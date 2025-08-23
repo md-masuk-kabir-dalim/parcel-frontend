@@ -6,7 +6,7 @@ import { Toaster } from 'sonner';
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang='en'>
-            <body className={cn('antialiased bg-background p-2')}>
+            <body className={cn('antialiased bg-background')}>
                 <Providers>
                     <Toaster />
                     {children}

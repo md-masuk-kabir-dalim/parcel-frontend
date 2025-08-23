@@ -14,8 +14,8 @@ interface LoaderParams {
 }
 
 const loader = ({ src, width, quality }: LoaderParams): string => {
-    const path = src?.split(`${envConfig.file_stroge_baseUrl}`);
-    return `${envConfig.file_stroge_baseUrl}/${encodeURIComponent(path?.[1])}?w=${width}&q=${quality || 75}`;
+    const path = src?.split(`${envConfig.baseApi}`);
+    return `${envConfig.baseApi}/${encodeURIComponent(path?.[1])}?w=${width}&q=${quality || 75}`;
 };
 
 export default loader;

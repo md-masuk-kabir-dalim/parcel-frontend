@@ -2,76 +2,109 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAppSelector } from '@/redux/hooks';
+import { FaUser, FaBox, FaTruck, FaHome, FaClipboardList } from 'react-icons/fa';
+import { usePathname } from 'next/navigation';
 
 interface SidebarProps {}
 
 const Sidebar: React.FC<SidebarProps> = () => {
     const { user } = useAppSelector((state) => state.auth);
     const [isClient, setIsClient] = useState(false);
+    const pathname = usePathname();
 
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
+    useEffect(() => setIsClient(true), []);
 
     if (!isClient) return null;
+
+    const routes = [
+        {
+            label: 'Home',
+            href: '/',
+            roles: ['ADMIN', 'CUSTOMER', 'DELIVERY_AGENT'],
+            icon: <FaHome />
+        },
+        {
+            label: 'Parcel Bookings',
+            href: '/dashboard/bookings',
+            roles: ['ADMIN'],
+            icon: <FaClipboardList />
+        },
+        {
+            label: 'Assign Agents',
+            href: '/dashboard/assign-agent',
+            roles: ['ADMIN'],
+            icon: <FaTruck />
+        },
+        {
+            label: 'All Users',
+            href: '/dashboard/users',
+            roles: ['ADMIN'],
+            icon: <FaUser />
+        },
+        {
+            label: 'My Bookings',
+            href: '/dashboard/my-bookings',
+            roles: ['CUSTOMER'],
+            icon: <FaBox />
+        },
+        {
+            label: 'Track Parcels',
+            href: '/dashboard/track-parcel',
+            roles: ['CUSTOMER'],
+            icon: <FaBox />
+        },
+        {
+            label: 'Assigned Parcels',
+            href: '/dashboard/assigned-parcels',
+            roles: ['DELIVERY_AGENT'],
+            icon: <FaTruck />
+        },
+        {
+            label: 'Update Status',
+            href: '/dashboard/update-status',
+            roles: ['DELIVERY_AGENT'],
+            icon: <FaClipboardList />
+        }
+    ];
+
+    const filteredRoutes = routes.filter(
+        (route) => user && route.roles.includes(user.role?.toUpperCase() || '')
+    );
+
     return (
-        <aside className='w-64 bg-white text-black shadow-lg flex flex-col h-screen'>
+        <aside className='w-64 bg-white text-gray-900 shadow-lg flex flex-col h-screen border-r border-gray-200'>
             {/* Header */}
-            <div className='p-4 text-center text-2xl font-bold border-b border-gray-700'>
-                Dashboard
+            <div className='p-6 text-center text-2xl font-bold border-b border-gray-200 bg-blue-600 text-black'>
+                Courier System
             </div>
 
-            {/* Navigation Links */}
-            <nav className='flex-grow p-4'>
-                <ul className='space-y-2'>
-                    <li>
-                        <Link href='/'>
-                            <p className='block py-2 px-4 rounded hover:bg-blue hover:text-white-light transition'>
-                                Home
-                            </p>
-                        </Link>
-                    </li>
-                    {(user?.role === 'admin' || user?.role === 'trainer') && (
-                        <li>
-                            <Link href='/dashboard/class-schedule'>
-                                <p className='block py-2 px-4 rounded hover:bg-blue hover:text-white-light transition'>
-                                    Class schedule
-                                </p>
-                            </Link>
-                        </li>
-                    )}
-                    {user?.role === 'admin' && (
-                        <li>
-                            <Link href='/dashboard/trainer'>
-                                <p className='block py-2 px-4 rounded hover:bg-blue hover:text-white-light transition'>
-                                    Trainer
-                                </p>
-                            </Link>
-                        </li>
-                    )}
-                    {user?.role === 'admin' && (
-                        <li>
-                            <Link href='/dashboard/booking'>
-                                <p className='block py-2 px-4 rounded hover:bg-blue hover:text-white-light transition'>
-                                    Booking
-                                </p>
-                            </Link>
-                        </li>
-                    )}
-                    {user?.role === 'trainee' && (
-                        <li>
-                            <Link href='/dashboard/my-booking'>
-                                <p className='block py-2 px-4 rounded hover:bg-blue hover:text-white-light transition'>
-                                    My Booking
-                                </p>
-                            </Link>
-                        </li>
-                    )}
+            {/* Navigation */}
+            <nav className='flex-grow p-4 overflow-y-auto'>
+                <ul className='space-y-1'>
+                    {filteredRoutes.map((route, index) => {
+                        const isActive = pathname === route.href;
+                        return (
+                            <li key={index}>
+                                <Link href={route.href}>
+                                    <div
+                                        className={`flex items-center gap-3 py-3 px-4 rounded-lg transition-all cursor-pointer
+                                            ${isActive ? 'bg-blue-600 text-white' : 'hover:bg-blue-100 hover:text-blue-800'}
+                                        `}
+                                    >
+                                        <span className='text-lg'>{route.icon}</span>
+                                        <span className='font-medium'>{route.label}</span>
+                                    </div>
+                                </Link>
+                            </li>
+                        );
+                    })}
                 </ul>
             </nav>
 
             {/* Footer */}
-            <div className='p-4 border-t border-gray-700 text-center text-sm'>© 2024 MyApp</div>
+            <div className='p-4 border-t border-gray-200 text-center text-sm text-gray-500'>
+                Logged in as: <span className='font-medium'>{user?.role}</span>
+            </div>
         </aside>
     );
 };

@@ -1,55 +1,69 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import Cookies from 'js-cookie';
+import { jwtDecode } from 'jwt-decode';
 
-// Define the AuthState type
+interface User {
+    role?: string;
+    userName?: string;
+    email?: string;
+}
+
 type AuthState = {
     token: string | null,
-    user: { id: string, email: string, role: string } | null,
+    user: User | null,
     isAuthenticated: boolean
 };
 
-// Helper function to safely retrieve data from localStorage
-const getFromLocalStorage = (key: string) => {
+// Helper function
+const getCookie = (key: string) => {
     if (typeof window !== 'undefined') {
-        return localStorage.getItem(key);
+        const value = Cookies.get(key);
+        return value || null;
     }
     return null;
 };
 
-// Retrieve the initial state from localStorage (if available)
-const tokenFromStorage = getFromLocalStorage('token');
-const userFromStorage = getFromLocalStorage('user');
+// Decode token safely
+const token = getCookie('token');
+let user: User | null = null;
+
+if (token) {
+    try {
+        user = jwtDecode<User>(token);
+    } catch (error) {
+        console.error('Invalid token:', error);
+        user = null;
+    }
+}
 
 const initialState: AuthState = {
-    token: tokenFromStorage ? tokenFromStorage : null,
-    user: userFromStorage ? JSON.parse(userFromStorage) : null,
-    isAuthenticated: !!tokenFromStorage
+    token,
+    user,
+    isAuthenticated: !!token
 };
 
 const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        setAuth: (state, action: PayloadAction<{ token: string, user: AuthState['user'] }>) => {
+        setAuth: (state, action: PayloadAction<{ token: string }>) => {
             state.token = action.payload.token;
-            state.user = action.payload.user;
             state.isAuthenticated = true;
 
-            // Save token and user to localStorage
-            if (typeof window !== 'undefined') {
-                localStorage.setItem('token', action.payload.token);
-                localStorage.setItem('user', JSON.stringify(action.payload.user));
+            try {
+                state.user = jwtDecode<User>(action.payload.token);
+            } catch (error) {
+                state.user = null;
             }
+
+            // Set cookie
+            Cookies.set('token', action.payload.token, { expires: 7 });
         },
         logout: (state) => {
             state.token = null;
             state.user = null;
             state.isAuthenticated = false;
-
-            // Clear token and user from localStorage
-            if (typeof window !== 'undefined') {
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-            }
+            Cookies.remove('token');
         }
     }
 });
