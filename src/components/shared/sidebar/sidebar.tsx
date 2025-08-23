@@ -19,8 +19,20 @@ const Sidebar: React.FC<SidebarProps> = () => {
     const routes = [
         {
             label: 'Home',
-            href: '/',
-            roles: ['ADMIN', 'CUSTOMER', 'DELIVERY_AGENT'],
+            href: '/dashboard',
+            roles: ['ADMIN'],
+            icon: <FaHome />
+        },
+        {
+            label: 'Home',
+            href: '/dashboard/agent',
+            roles: ['DELIVERY_AGENT'],
+            icon: <FaHome />
+        },
+        {
+            label: 'Home',
+            href: '/dashboard/customer',
+            roles: ['CUSTOMER'],
             icon: <FaHome />
         },
         {
@@ -42,14 +54,14 @@ const Sidebar: React.FC<SidebarProps> = () => {
             icon: <FaUser />
         },
         {
-            label: 'My Bookings',
-            href: '/dashboard/my-bookings',
+            label: 'My Parcel',
+            href: '/dashboard/customer/my-parcel',
             roles: ['CUSTOMER'],
             icon: <FaBox />
         },
         {
             label: 'Track Parcels',
-            href: '/dashboard/track-parcel',
+            href: '/dashboard/customer/track-parcel',
             roles: ['CUSTOMER'],
             icon: <FaBox />
         },
@@ -72,7 +84,7 @@ const Sidebar: React.FC<SidebarProps> = () => {
     );
 
     return (
-        <aside className='w-64 bg-white text-gray-900 shadow-lg flex flex-col h-screen border-r border-gray-200'>
+        <aside className='w-64 bg-white text-gray-900 flex flex-col h-screen'>
             {/* Header */}
             <div className='p-6 text-center text-2xl font-bold border-b border-gray-200 bg-blue-600 text-black'>
                 Courier System
@@ -87,8 +99,8 @@ const Sidebar: React.FC<SidebarProps> = () => {
                             <li key={index}>
                                 <Link href={route.href}>
                                     <div
-                                        className={`flex items-center gap-3 py-3 px-4 rounded-lg transition-all cursor-pointer
-                                            ${isActive ? 'bg-blue-600 text-white' : 'hover:bg-blue-100 hover:text-blue-800'}
+                                        className={`flex items-center gap-3 py-2 px-4 transition-all cursor-pointer
+                                            ${isActive ? 'bg-blue text-white' : 'hover:bg-blue-100 hover:text-blue-800'}
                                         `}
                                     >
                                         <span className='text-lg'>{route.icon}</span>
