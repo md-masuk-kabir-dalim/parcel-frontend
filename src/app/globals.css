@@ -2,20 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-
-
+/* ------------------ Fonts ------------------ */
 @font-face {
   font-family: 'GeistVF';
-  src: url('/src/app/fonts/GeistVF.woff') format('woff');
+  src: local('GeistVF'), url('/src/app/fonts/GeistVF.woff') format('woff');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -23,15 +13,36 @@ body {
 
 @font-face {
   font-family: 'GeistMonoVF';
-  src: url('/src/app/fonts/GeistMonoVF.woff') format('woff');
+  src: local('GeistMonoVF'), url('/src/app/fonts/GeistMonoVF.woff') format('woff');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
+/* ------------------ Global base styles ------------------ */
+html, body {
+  font-family: 'GeistVF', Arial, Helvetica, sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+  margin: 0;
+  padding: 0;
+}
 
+code, pre {
+  font-family: 'GeistMonoVF', monospace;
+}
+
+@layer utilities {
+  /* Modern balanced text */
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* ------------------ CSS Variables ------------------ */
 @layer base {
   :root {
+    /* Core colors */
     --white: #ffffff;
     --black: #000000;
     --blue: #1E90FF;
@@ -40,13 +51,17 @@ body {
     --foreground: #000000;
     --primary: var(--blue);
     --primary-foreground: var(--black);
+
+    /* Gray scale */
     --gray-100: #f5f5f5;
     --gray-200: #e0e0e0;
     --gray-300: #c0c0c0;
-    --gray-400: #a0a0a0; 
-    --gray-500: #808080; 
-    --gray-600: #606060; 
+    --gray-400: #a0a0a0;
+    --gray-500: #808080;
+    --gray-600: #606060;
     --gray-700: #404040;
+
+    /* Yellow scale */
     --yellow-100: #fff9c4;
     --yellow-200: #fff59d;
     --yellow-300: #fff176;
@@ -56,6 +71,8 @@ body {
     --yellow-700: #fbc02d;
     --yellow-800: #f9a825;
     --yellow-900: #f57f17;
+
+    /* Red scale */
     --red-100: #ffebee;
     --red-200: #ffcdd2;
     --red-300: #ef9a9a;
@@ -65,6 +82,8 @@ body {
     --red-700: #d32f2f;
     --red-800: #c62828;
     --red-900: #b71c1c;
+
+    /* UI tokens */
     --accent: 240 4.8% 95.9%;
     --accent-foreground: 240 5.9% 10%;
     --destructive: 0 84.2% 60.2%;
@@ -72,56 +91,15 @@ body {
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
     --ring: 240 10% 3.9%;
+
+    /* Chart colors */
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+
+    /* Border radius */
     --radius: 0.5rem;
   }
-  .dark {
-    --white: #000000;
-    --black: #ffffff;
-    --blue: #1E90FF;
-    --green: #1d7f39;
-    --background: #303030;
-    --foreground: #f0f0f0;
-    --primary: var(--blue);
-    --primary-foreground: var(--black);
-    --gray-100: #404040;
-    --gray-200: #303030;
-    --gray-300: #202020; 
-    --gray-400: #181818; 
-    --gray-500: #101010; 
-    --gray-600: #0a0a0a; 
-    --gray-700: #050505;
-    --yellow-100: #fff3b0;
-    --yellow-200: #ffec80;
-    --yellow-300: #ffe34d; 
-    --yellow-400: #ffd700;
-    --yellow-500: #ffcc00;
-    --yellow-600: #e6b800;
-    --yellow-700: #cc9900; 
-    --yellow-800: #b38600;
-    --yellow-900: #996600;
-    --red-100: #ffebee;
-    --red-200: #ffccd2;
-    --red-300: #ef9a9a;
-    --red-400: #e57373;
-    --red-500: #f44336;
-    --red-600: #e53935;
-    --red-700: #d32f2f;
-    --red-800: #c62828;
-    --red-900: #b71c1c;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-  }
 }
-
-

@@ -6,6 +6,7 @@ type AuthState = {
     user: { id: string, email: string, role: string } | null,
     isAuthenticated: boolean
 };
+
 // Helper function to safely retrieve data from localStorage
 const getFromLocalStorage = (key: string) => {
     if (typeof window !== 'undefined') {

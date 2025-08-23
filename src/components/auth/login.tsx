@@ -18,81 +18,76 @@ type FormData = {
 
 const Login = () => {
     const showTost = useToaster();
-    const navigate = useRouter();
+    const router = useRouter();
     const dispatch = useAppDispatch();
+
     const methods = useForm<FormData>({
         defaultValues: {
             email: '',
             password: ''
-        }
+        },
+        mode: 'onBlur' // advanced validation trigger
     });
 
-    const { handleSubmit } = methods;
+    const { handleSubmit, formState } = methods;
     const [loginUser, { isLoading }] = useCreateResourceMutation();
 
     const onSubmit = async (data: FormData) => {
         try {
-            const payload = { ...data };
             const response = await loginUser({
                 url: authRoutes.login,
                 tags: tagTypes.auth,
-                payload
+                payload: data
             }).unwrap();
-            // Store token and user in Redux
+
             dispatch(setAuth({ token: response.token, user: response.user }));
             showTost('success', 'Login successful!');
-            navigate.push('/dashboard'); // Redirect
+            router.push('/dashboard');
         } catch (error: any) {
             showTost('error', error.data?.message || 'Login failed!');
         }
     };
 
     return (
-        <div className='flex items-center justify-center min-h-screen bg-gray-100'>
-            <div className='max-w-md w-full bg-white p-8 rounded-lg shadow-md'>
-                <h2 className='text-2xl font-bold text-center text-black mb-6'>
-                    Login to Your Account
-                </h2>
+        <div className='min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white px-4'>
+            <div className='max-w-md w-full bg-white p-8 rounded-xl shadow-lg border border-gray-200 animate-fadeIn'>
+                <h2 className='text-3xl font-bold text-center text-gray-900 mb-6'>Welcome Back</h2>
+                <p className='text-center text-gray-500 mb-8'>
+                    Enter your credentials to access your account
+                </p>
+
                 <FormProvider {...methods}>
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        {/* Email */}
+                    <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
                         <Input
                             name='email'
                             label='Email'
                             type='email'
-                            labelClassName='text-white-light'
-                            placeholder='Enter your email'
+                            placeholder='you@example.com'
                             rules={{
-                                required: 'Email is required',
+                                required: ' ',
                                 pattern: {
                                     value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
                                     message: 'Invalid email address'
                                 }
                             }}
-                            formClassName='mb-4'
                         />
-
-                        {/* Password */}
                         <Input
                             name='password'
                             label='Password'
                             type='password'
-                            labelClassName='text-white-light'
                             placeholder='Enter your password'
                             rules={{
-                                required: 'Password is required',
+                                required: ' ',
                                 minLength: {
                                     value: 6,
-                                    message: 'Password must be at least 6 characters long'
+                                    message: 'Password must be at least 6 characters'
                                 }
                             }}
-                            formClassName='mb-6'
                         />
 
-                        {/* Submit Button */}
                         <Button
                             type='submit'
-                            className={`w-full py-2 px-4 bg-blue text-white-light font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
+                            className={`w-full py-3 bg-blue text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-colors ${
                                 isLoading ? 'opacity-50 cursor-not-allowed' : ''
                             }`}
                             disabled={isLoading}
@@ -101,6 +96,13 @@ const Login = () => {
                         </Button>
                     </form>
                 </FormProvider>
+
+                <div className='mt-6 text-center text-gray-500 text-sm'>
+                    Don't have an account?{' '}
+                    <a href='/auth/register' className='text-blue-600 font-medium hover:underline'>
+                        Register
+                    </a>
+                </div>
             </div>
         </div>
     );
