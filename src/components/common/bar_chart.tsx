@@ -1,13 +1,19 @@
 'use client';
-import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
+import React from 'react';
 import {
-    ChartConfig,
-    ChartContainer,
-    ChartLegend,
-    ChartLegendContent,
-    ChartTooltip,
-    ChartTooltipContent
-} from '@/components/ui/chart';
+    Bar,
+    BarChart,
+    CartesianGrid,
+    XAxis,
+    Tooltip,
+    Legend,
+    ResponsiveContainer
+} from 'recharts';
+
+interface ChartConfig {
+    legend?: boolean;
+    tooltip?: boolean;
+}
 
 interface ReusableBarChartProps {
     data: any[];
@@ -30,30 +36,24 @@ const ReusableBarChart: React.FC<ReusableBarChartProps> = ({
     className = 'w-full'
 }) => {
     return (
-        <ChartContainer config={config} className={`${height} ${className}`}>
-            <BarChart accessibilityLayer data={data}>
-                <CartesianGrid vertical={false} />
-                <XAxis
-                    dataKey={xKey}
-                    tickLine={false}
-                    tickMargin={10}
-                    axisLine={false}
-                    tickFormatter={(value) =>
-                        typeof value === 'string' ? value.slice(0, 3) : value
-                    }
-                />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <ChartLegend content={<ChartLegendContent />} />
-                {bars.map((bar) => (
-                    <Bar
-                        key={bar.dataKey}
-                        dataKey={bar.dataKey}
-                        fill={`var(--color-${bar.dataKey})`}
-                        radius={bar.radius ?? 4}
-                    />
-                ))}
-            </BarChart>
-        </ChartContainer>
+        <div className={`${height} ${className}`}>
+            <ResponsiveContainer width='100%' height='100%'>
+                <BarChart data={data}>
+                    <CartesianGrid strokeDasharray='3 3' vertical={false} />
+                    <XAxis dataKey={xKey} tickLine={false} axisLine={false} tickMargin={10} />
+                    {config.tooltip && <Tooltip />}
+                    {config.legend && <Legend />}
+                    {bars.map((bar) => (
+                        <Bar
+                            key={bar.dataKey}
+                            dataKey={bar.dataKey}
+                            fill='#3b82f6'
+                            radius={bar.radius ?? 4}
+                        />
+                    ))}
+                </BarChart>
+            </ResponsiveContainer>
+        </div>
     );
 };
 

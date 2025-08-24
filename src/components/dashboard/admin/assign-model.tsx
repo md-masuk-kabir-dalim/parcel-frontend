@@ -8,6 +8,7 @@ import useToaster from '@/hooks/useToaster';
 import { tagTypes } from '@/redux/tag-types';
 
 const AssignParcelModal = ({ isOpen, onClose, parcelData, refetch }: any) => {
+
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedAgent, setSelectedAgent] = useState<any>(null);
     const showToast = useToaster();
@@ -30,7 +31,7 @@ const AssignParcelModal = ({ isOpen, onClose, parcelData, refetch }: any) => {
         try {
             const res: any = await assignParcel({
                 url: parcelRoutes.updateParcel(parcelData.id),
-                payload: { assignId: selectedAgent._id, status: 'ASSIGNED' }
+                payload: { assignId: selectedAgent.id, status: 'ASSIGNED' }
             }).unwrap();
 
             if (res?.success) {
@@ -83,13 +84,13 @@ const AssignParcelModal = ({ isOpen, onClose, parcelData, refetch }: any) => {
                     ) : (
                         agents?.result?.users?.map((agent: any) => (
                             <div
-                                key={agent._id}
+                                key={agent.id}
                                 onClick={() => setSelectedAgent(agent)}
                                 className={`p-2 cursor-pointer hover:bg-gray-100 ${
-                                    selectedAgent?._id === agent._id ? 'bg-green-100' : ''
+                                    selectedAgent?.id === agent.id ? 'bg-green-100' : ''
                                 }`}
                             >
-                                {agent.username} ({agent.phone})
+                                {agent.username} ({agent.phoneNumber})
                             </div>
                         ))
                     )}

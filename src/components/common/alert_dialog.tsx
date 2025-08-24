@@ -19,7 +19,7 @@ export function CustomAlert({ onConfirm, onCancel, ...otherProps }: CustomAlertP
     if (!alertTrigger.isOpen) return null;
     return (
         <AlertDialog open={otherProps.isOpen} onOpenChange={handleClose}>
-            <AlertDialogContent>
+            <AlertDialogContent className='bg-white'>
                 <AlertDialogHeader>
                     <AlertDialogTitle>{otherProps.title}</AlertDialogTitle>
                     <AlertDialogDescription>{otherProps.description}</AlertDialogDescription>

@@ -8,6 +8,7 @@ import { parcelRoutes } from '@/constants/end-point';
 import calculateDistance from '@/lib/helpers/calculate_distance';
 import Input from '@/components/common/input';
 import { useRouter } from 'next/navigation';
+import { tagTypes } from '@/redux/tag-types';
 
 const PARCEL_TYPES = [
     'DOCUMENT',
@@ -72,7 +73,8 @@ const ParcelCreate: React.FC = () => {
         try {
             const res: any = await createParcel({
                 url: parcelRoutes.create,
-                payload: values
+                payload: values,
+                tags:tagTypes.parcelList
             }).unwrap();
             if (res?.success) {
                 showToast('success', 'Parcel created successfully');

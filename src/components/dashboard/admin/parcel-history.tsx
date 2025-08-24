@@ -36,7 +36,6 @@ const ParcelHistory = () => {
         params: {
             page: currentPage,
             limit: pageSize,
-            // status: 'UNASSIGNED',
             isHistory: 'true',
             searchText: debouncedSearchTerm
         },
@@ -56,7 +55,7 @@ const ParcelHistory = () => {
         { text: 'Weight', key: 'weight' },
         { text: 'Type', key: 'type' }
     ];
-
+    console.log(allParcels);
     const tableData = useMemo(() => {
         return (
             allParcels?.result?.data?.map((parcel: any, index: number) => ({
@@ -90,7 +89,10 @@ const ParcelHistory = () => {
     const handleConfirmDelete = async () => {
         if (!deleteItemId) return;
         try {
-            const res: any = await deleteParcel({ url: `/parcels/${deleteItemId}` }).unwrap();
+            const res: any = await deleteParcel({
+                url: parcelRoutes.deleteParcel(deleteItemId),
+                tags: tagTypes.parcelList
+            }).unwrap();
             if (res?.isSuccess) {
                 showToast('success', 'Parcel deleted successfully');
                 refetch();

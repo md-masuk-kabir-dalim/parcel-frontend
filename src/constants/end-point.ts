@@ -2,6 +2,7 @@ const rootRoutes = '/api/v1';
 const rootAuthRoute = `${rootRoutes}/auth`;
 const rootUserRoute = `${rootRoutes}/users`;
 const rootParcelRoute = `${rootRoutes}/parcel`;
+const rootAdminRoute = `${rootRoutes}/admin`;
 
 //auth
 export const authRoutes = {
@@ -23,5 +24,14 @@ export const usersRoutes = {
 export const parcelRoutes = {
     create: rootParcelRoute,
     getParcelList: rootParcelRoute,
-    updateParcel: (id: string) => `${rootParcelRoute}/${id}`
+    updateParcel: (id: string) => `${rootParcelRoute}/${id}`,
+    deleteParcel: (id: string) => `${rootParcelRoute}/${id}`
+};
+
+//admin
+export const adminRoutes = {
+    summary: `${rootAdminRoute}/summary`,
+    monthlyRevenue: `${rootAdminRoute}/monthly-revenue`,
+    topCustomers: `${rootAdminRoute}/top-customers`,
+    topAgents: `${rootAdminRoute}/top-agents`
 };

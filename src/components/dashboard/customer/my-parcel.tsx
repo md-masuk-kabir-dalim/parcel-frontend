@@ -10,6 +10,7 @@ import CustomPagination from '@/components/common/custom_pagination';
 import { CustomAlert } from '@/components/common/alert_dialog';
 import { parcelRoutes } from '@/constants/end-point';
 import { icons } from '@/constants/icons';
+import { tagTypes } from '@/redux/tag-types';
 
 const MyParcel: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
@@ -36,7 +37,8 @@ const MyParcel: React.FC = () => {
             page: currentPage,
             limit: pageSize,
             searchText: debouncedSearchTerm
-        }
+        },
+        tags: tagTypes.parcelList
     });
 
     const [deleteParcel] = useDeleteResourceMutation();
@@ -46,6 +48,7 @@ const MyParcel: React.FC = () => {
         { text: '#', key: 'sl' },
         { text: 'Parcel ID', key: 'parcelId' },
         { text: 'Customer', key: 'customer' },
+        { text: 'Agent', key: 'agent' },
         { text: 'Pickup', key: 'pickupLocation' },
         { text: 'Dropoff', key: 'dropoffLocation' },
         { text: 'Weight', key: 'weight' },
@@ -60,6 +63,7 @@ const MyParcel: React.FC = () => {
                 _id: parcel.id,
                 parcelId: parcel.parcelId,
                 customer: parcel.customer?.username || 'N/A',
+                agent: parcel.agent?.username || 'N/A',
                 status: parcel?.status ?? 'N/A',
                 pickupLocation: parcel.pickupLocation?.address || 'N/A',
                 dropoffLocation: parcel.dropoffLocation?.address || 'N/A',
@@ -86,8 +90,11 @@ const MyParcel: React.FC = () => {
     const handleConfirmDelete = async () => {
         if (!deleteItemId) return;
         try {
-            const res: any = await deleteParcel({ url: `/parcels/${deleteItemId}` }).unwrap();
-            if (res?.isSuccess) {
+            const res: any = await deleteParcel({
+                url: parcelRoutes.deleteParcel(deleteItemId),
+                tags: tagTypes.parcelList
+            }).unwrap();
+            if (res?.success) {
                 showToast('success', 'Parcel deleted successfully');
                 refetch();
             }
@@ -101,10 +108,6 @@ const MyParcel: React.FC = () => {
 
     // Actions for each row
     const actions = [
-        {
-            label: <icons.editIcon />,
-            link: (row: any) => `/dashboard/parcels/edit/${row._id}`
-        },
         {
             label: <icons.deleteIcon />,
             onClick: (row: any) => handleShowDeleteAlert(row._id)
