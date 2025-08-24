@@ -1,4 +1,3 @@
-import dashboardIcon from '@./../../public/icons/dashboard.svg';
 import { MdArrowDropDown, MdFavoriteBorder } from 'react-icons/md';
 import { RxCross1 } from 'react-icons/rx';
 import { MdArrowBack } from 'react-icons/md';
@@ -37,7 +36,6 @@ import { FaCodeCompare } from 'react-icons/fa6';
 import { TbExchange } from 'react-icons/tb';
 import { FaApple } from 'react-icons/fa';
 export const icons = {
-    dashboardIcon,
     dropdown: MdArrowDropDown,
     cross: RxCross1,
     arrowBack: MdArrowBack,
