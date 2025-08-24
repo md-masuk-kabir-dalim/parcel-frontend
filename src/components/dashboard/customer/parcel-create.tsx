@@ -1,11 +1,12 @@
 'use client';
-import React from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import React, { useEffect } from 'react';
+import { useForm, FormProvider, useWatch } from 'react-hook-form';
 import { useCreateResourceMutation } from '@/redux/api/curd';
 import useToaster from '@/hooks/useToaster';
 import Input from '@/components/common/input';
 import LocationInput from '@/components/common/Location_Input';
 import { parcelRoutes } from '@/constants/end-point';
+import calculateDistance from '@/lib/helpers/calculate_distance';
 
 const PARCEL_TYPES = [
     'DOCUMENT',
@@ -24,6 +25,10 @@ const PARCEL_TYPES = [
 const SIZE_CATEGORIES = ['SMALL', 'MEDIUM', 'LARGE', 'EXTRA_LARGE'];
 const PAYMENT_MODES = ['COD', 'PREPAID'];
 
+const BASE_FEE = 100;
+const PER_KG = 20;
+const PER_KM = 10;
+
 const ParcelCreate: React.FC = () => {
     const methods = useForm({
         defaultValues: {
@@ -37,16 +42,29 @@ const ParcelCreate: React.FC = () => {
             weight: 0,
             sizeCategory: 'SMALL',
             paymentMode: 'COD',
-            deliveryFee: 0,
-            totalAmount: 0
+            deliveryFee: BASE_FEE,
+            totalAmount: BASE_FEE
         }
     });
 
-    const { handleSubmit, reset, register } = methods;
+    const { handleSubmit, reset, register, setValue, control } = methods;
     const [createParcel, { isLoading }] = useCreateResourceMutation();
     const showToast = useToaster();
 
+    // 👀 watch fields dynamically
+    const weight = useWatch({ control, name: 'weight' });
+    const pickup = useWatch({ control, name: 'pickupLocation' });
+    const dropoff = useWatch({ control, name: 'dropoffLocation' });
+
+    useEffect(() => {
+        const distance = calculateDistance(pickup?.coordinates, dropoff?.coordinates);
+        const deliveryFee = BASE_FEE + (weight || 0) * PER_KG + distance * PER_KM;
+        setValue('deliveryFee', Math.round(BASE_FEE));
+        setValue('totalAmount', Math.round(deliveryFee));
+    }, [weight, pickup, dropoff, setValue]);
+
     const onSubmit = async (values: any) => {
+        console.log(values);
         try {
             const res: any = await createParcel({
                 url: parcelRoutes.create,
@@ -115,13 +133,13 @@ const ParcelCreate: React.FC = () => {
                         </select>
                     </div>
 
-                    <Input name='deliveryFee' type='number' label='Delivery Fee' />
-                    <Input name='totalAmount' type='number' label='Total Amount' />
+                    <Input name='deliveryFee' type='number' label='Delivery Fee' disabled />
+                    <Input name='totalAmount' type='number' label='Total Amount' disabled />
 
                     <button
                         type='submit'
                         disabled={isLoading}
-                        className='w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition'
+                        className='w-full bg-blue text-white py-2 rounded-md hover:bg-blue-700 transition'
                     >
                         {isLoading ? 'Saving…' : 'Create Parcel'}
                     </button>
