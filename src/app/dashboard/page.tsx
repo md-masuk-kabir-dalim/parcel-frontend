@@ -13,6 +13,8 @@ const DashBoardPage = () => {
             </div>
             <div className='mt-9'>
                 <TopCustomer />
+            </div>
+            <div className='mt-9'>
                 <TopAgent />
             </div>
         </section>
