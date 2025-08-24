@@ -5,6 +5,7 @@ import { useFetchResourceQuery, useUpdateResourceMutation } from '@/redux/api/cu
 import { usersRoutes, parcelRoutes } from '@/constants/end-point';
 import { useDebounced } from '@/hooks/useDebounce';
 import useToaster from '@/hooks/useToaster';
+import { tagTypes } from '@/redux/tag-types';
 
 const AssignParcelModal = ({ isOpen, onClose, parcelData, refetch }: any) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -14,7 +15,8 @@ const AssignParcelModal = ({ isOpen, onClose, parcelData, refetch }: any) => {
 
     const { data: agents, isFetching } = useFetchResourceQuery({
         url: usersRoutes.getAllUsers,
-        params: { searchText: debouncedSearch, limit: 10, role: 'DELIVERY_AGENT' }
+        params: { searchText: debouncedSearch, limit: 10, role: 'DELIVERY_AGENT' },
+        tags: tagTypes.parcelList
     });
 
     // Assign API
@@ -31,7 +33,7 @@ const AssignParcelModal = ({ isOpen, onClose, parcelData, refetch }: any) => {
                 payload: { assignId: selectedAgent._id, status: 'ASSIGNED' }
             }).unwrap();
 
-            if (res?.isSuccess) {
+            if (res?.success) {
                 showToast('success', 'Parcel assigned successfully');
                 refetch?.();
                 onClose();

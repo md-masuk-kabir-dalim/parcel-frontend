@@ -11,6 +11,7 @@ import { CustomAlert } from '@/components/common/alert_dialog';
 import { parcelRoutes } from '@/constants/end-point';
 import { icons } from '@/constants/icons';
 import AssignParcelModal from './assign-model';
+import { tagTypes } from '@/redux/tag-types';
 
 const AssignAgent = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
@@ -43,7 +44,8 @@ const AssignAgent = () => {
             limit: pageSize,
             status: 'UNASSIGNED',
             searchText: debouncedSearchTerm
-        }
+        },
+        tags: tagTypes.parcelList
     });
 
     const [deleteParcel] = useDeleteResourceMutation();
@@ -162,6 +164,7 @@ const AssignAgent = () => {
                 isOpen={isAssignModalOpen}
                 onClose={() => setIsAssignModalOpen(false)}
                 parcelData={assignParcelData}
+                refetch={refetch}
             />
         </div>
     );

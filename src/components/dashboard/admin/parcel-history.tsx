@@ -10,6 +10,7 @@ import CustomPagination from '@/components/common/custom_pagination';
 import { CustomAlert } from '@/components/common/alert_dialog';
 import { parcelRoutes } from '@/constants/end-point';
 import { icons } from '@/constants/icons';
+import { tagTypes } from '@/redux/tag-types';
 
 const ParcelHistory = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
@@ -38,7 +39,8 @@ const ParcelHistory = () => {
             // status: 'UNASSIGNED',
             isHistory: 'true',
             searchText: debouncedSearchTerm
-        }
+        },
+        tags: tagTypes.parcelList
     });
 
     const [deleteParcel] = useDeleteResourceMutation();
@@ -103,10 +105,6 @@ const ParcelHistory = () => {
 
     // Actions for each row
     const actions = [
-        {
-            label: <icons.editIcon />,
-            link: (row: any) => `/dashboard/parcels/edit/${row._id}`
-        },
         {
             label: <icons.deleteIcon />,
             onClick: (row: any) => handleShowDeleteAlert(row._id)
