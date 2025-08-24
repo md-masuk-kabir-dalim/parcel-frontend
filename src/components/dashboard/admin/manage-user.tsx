@@ -1,17 +1,17 @@
 'use client';
-import React, { useState, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useFetchResourceQuery, useDeleteResourceMutation } from '@/redux/api/curd';
-import { hideAlert, showAlert } from '@/redux/features/action/alertActions';
+import { CustomAlert } from '@/components/common/alert_dialog';
+import CustomPagination from '@/components/common/custom_pagination';
+import DataTable from '@/components/common/data_table';
+import { usersRoutes } from '@/constants/end-point';
+import { icons } from '@/constants/icons';
 import { useDebounced } from '@/hooks/useDebounce';
 import useToaster from '@/hooks/useToaster';
-import DataTable from '@/components/common/data_table';
-import CustomPagination from '@/components/common/custom_pagination';
-import { CustomAlert } from '@/components/common/alert_dialog';
-import { parcelRoutes } from '@/constants/end-point';
-import { icons } from '@/constants/icons';
+import { useDeleteResourceMutation, useFetchResourceQuery } from '@/redux/api/curd';
+import { hideAlert, showAlert } from '@/redux/features/action/alertActions';
+import React, { useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-const MyParcel: React.FC = () => {
+const ManageUser = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(10);
     const [searchTerm, setSearchTerm] = useState<string>('');
@@ -27,47 +27,48 @@ const MyParcel: React.FC = () => {
     });
 
     const {
-        data: allParcels,
+        data: allUsers,
         isFetching,
         refetch
     } = useFetchResourceQuery({
-        url: parcelRoutes.getParcelList,
+        url: usersRoutes.getAllUsers,
         params: {
             page: currentPage,
             limit: pageSize,
+            role: 'CUSTOMER',
             searchText: debouncedSearchTerm
         }
     });
 
-    const [deleteParcel] = useDeleteResourceMutation();
+    const [deleteUser] = useDeleteResourceMutation();
 
     // Table headers
     const headers = [
         { text: '#', key: 'sl' },
-        { text: 'Parcel ID', key: 'parcelId' },
         { text: 'Customer', key: 'customer' },
-        { text: 'Pickup', key: 'pickupLocation' },
-        { text: 'Dropoff', key: 'dropoffLocation' },
-        { text: 'Weight', key: 'weight' },
-        { text: 'Type', key: 'type' },
-        { text: 'Status', key: 'status' }
+        { text: 'Email', key: 'email' },
+        { text: 'Gender', key: 'gender' },
+        { text: 'Date Of Birth', key: 'dateOfBirth' },
+        { text: 'Phone Number', key: 'phoneNumber' },
+        { text: 'Role', key: 'role' },
+        { text: 'CreatedAt', key: 'createdAt' }
     ];
 
     const tableData = useMemo(() => {
         return (
-            allParcels?.result?.data?.map((parcel: any, index: number) => ({
+            allUsers?.result?.users?.map((user: any, index: number) => ({
                 sl: index + 1 + (currentPage - 1) * pageSize,
-                _id: parcel.id,
-                parcelId: parcel.parcelId,
-                customer: parcel.customer?.username || 'N/A',
-                status: parcel?.status ?? 'N/A',
-                pickupLocation: parcel.pickupLocation?.address || 'N/A',
-                dropoffLocation: parcel.dropoffLocation?.address || 'N/A',
-                weight: parcel?.weight ?? 'N/A',
-                type: parcel?.type ?? 'N/A'
+                _id: user.id,
+                customer: user?.username || 'N/A',
+                email: user?.email ?? 'N/A',
+                gender: user?.gender ?? 'N/A',
+                dateOfBirth: user?.dateOfBirth ?? 'N/A',
+                createdAt: user?.createdAt || 'N/A',
+                phoneNumber: user?.phoneNumber || 'N/A',
+                role: user.role ?? 'N/A'
             })) || []
         );
-    }, [allParcels, currentPage, pageSize]);
+    }, [allUsers, currentPage, pageSize]);
 
     // Delete handlers
     const handleShowDeleteAlert = (id: string) => {
@@ -75,7 +76,7 @@ const MyParcel: React.FC = () => {
         dispatch(
             showAlert({
                 title: 'Confirm Action',
-                description: 'Are you sure you want to delete this parcel?',
+                description: 'Are you sure you want to delete this user?',
                 confirmLabel: 'Yes, Delete',
                 cancelLabel: 'No, Cancel',
                 alertType: 'deleteItem'
@@ -86,9 +87,9 @@ const MyParcel: React.FC = () => {
     const handleConfirmDelete = async () => {
         if (!deleteItemId) return;
         try {
-            const res: any = await deleteParcel({ url: `/parcels/${deleteItemId}` }).unwrap();
+            const res: any = await deleteUser({ url: `/users/${deleteItemId}` }).unwrap();
             if (res?.isSuccess) {
-                showToast('success', 'Parcel deleted successfully');
+                showToast('success', 'user deleted successfully');
                 refetch();
             }
         } catch (error: any) {
@@ -101,10 +102,6 @@ const MyParcel: React.FC = () => {
 
     // Actions for each row
     const actions = [
-        {
-            label: <icons.editIcon />,
-            link: (row: any) => `/dashboard/parcels/edit/${row._id}`
-        },
         {
             label: <icons.deleteIcon />,
             onClick: (row: any) => handleShowDeleteAlert(row._id)
@@ -119,11 +116,9 @@ const MyParcel: React.FC = () => {
                 actions={actions}
                 isFetching={isFetching}
                 setSearchTerm={setSearchTerm}
-                createButtonText='Create'
-                createPageLink='/dashboard/customer/parcel-create'
             />
             <CustomPagination
-                totalPages={allParcels?.result?.meta?.totalPage || 1}
+                totalPages={allUsers?.result?.meta?.totalPage || 1}
                 currentPage={currentPage}
                 onPageChange={setCurrentPage}
                 pageSizeOptions={[10, 20, 50]}
@@ -148,4 +143,4 @@ const MyParcel: React.FC = () => {
     );
 };
 
-export default MyParcel;
+export default ManageUser;

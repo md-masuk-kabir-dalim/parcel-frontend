@@ -11,7 +11,7 @@ import { CustomAlert } from '@/components/common/alert_dialog';
 import { parcelRoutes } from '@/constants/end-point';
 import { icons } from '@/constants/icons';
 
-const MyParcel: React.FC = () => {
+const ParcelHistory = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(10);
     const [searchTerm, setSearchTerm] = useState<string>('');
@@ -35,6 +35,8 @@ const MyParcel: React.FC = () => {
         params: {
             page: currentPage,
             limit: pageSize,
+            // status: 'UNASSIGNED',
+            isHistory: 'true',
             searchText: debouncedSearchTerm
         }
     });
@@ -46,11 +48,11 @@ const MyParcel: React.FC = () => {
         { text: '#', key: 'sl' },
         { text: 'Parcel ID', key: 'parcelId' },
         { text: 'Customer', key: 'customer' },
+        { text: 'Status', key: 'status' },
         { text: 'Pickup', key: 'pickupLocation' },
         { text: 'Dropoff', key: 'dropoffLocation' },
         { text: 'Weight', key: 'weight' },
-        { text: 'Type', key: 'type' },
-        { text: 'Status', key: 'status' }
+        { text: 'Type', key: 'type' }
     ];
 
     const tableData = useMemo(() => {
@@ -63,8 +65,8 @@ const MyParcel: React.FC = () => {
                 status: parcel?.status ?? 'N/A',
                 pickupLocation: parcel.pickupLocation?.address || 'N/A',
                 dropoffLocation: parcel.dropoffLocation?.address || 'N/A',
-                weight: parcel?.weight ?? 'N/A',
-                type: parcel?.type ?? 'N/A'
+                weight: parcel.weight ?? 'N/A',
+                type: parcel.type ?? 'N/A'
             })) || []
         );
     }, [allParcels, currentPage, pageSize]);
@@ -148,4 +150,4 @@ const MyParcel: React.FC = () => {
     );
 };
 
-export default MyParcel;
+export default ParcelHistory;

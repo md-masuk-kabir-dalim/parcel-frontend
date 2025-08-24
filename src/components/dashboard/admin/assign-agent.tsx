@@ -10,12 +10,18 @@ import CustomPagination from '@/components/common/custom_pagination';
 import { CustomAlert } from '@/components/common/alert_dialog';
 import { parcelRoutes } from '@/constants/end-point';
 import { icons } from '@/constants/icons';
+import AssignParcelModal from './assign-model';
 
-const MyParcel: React.FC = () => {
+const AssignAgent = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(10);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
+
+    // Modal state
+    const [assignParcelData, setAssignParcelData] = useState<any | null>(null);
+    const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+
     const dispatch = useDispatch();
     const alert = useSelector((state: any) => state.alert);
     const showToast = useToaster();
@@ -35,6 +41,7 @@ const MyParcel: React.FC = () => {
         params: {
             page: currentPage,
             limit: pageSize,
+            status: 'UNASSIGNED',
             searchText: debouncedSearchTerm
         }
     });
@@ -46,25 +53,26 @@ const MyParcel: React.FC = () => {
         { text: '#', key: 'sl' },
         { text: 'Parcel ID', key: 'parcelId' },
         { text: 'Customer', key: 'customer' },
+        { text: 'Status', key: 'status' },
         { text: 'Pickup', key: 'pickupLocation' },
         { text: 'Dropoff', key: 'dropoffLocation' },
         { text: 'Weight', key: 'weight' },
-        { text: 'Type', key: 'type' },
-        { text: 'Status', key: 'status' }
+        { text: 'Type', key: 'type' }
     ];
 
+    // Map data for table
     const tableData = useMemo(() => {
         return (
             allParcels?.result?.data?.map((parcel: any, index: number) => ({
                 sl: index + 1 + (currentPage - 1) * pageSize,
-                _id: parcel.id,
+                id: parcel.id,
                 parcelId: parcel.parcelId,
                 customer: parcel.customer?.username || 'N/A',
                 status: parcel?.status ?? 'N/A',
                 pickupLocation: parcel.pickupLocation?.address || 'N/A',
                 dropoffLocation: parcel.dropoffLocation?.address || 'N/A',
-                weight: parcel?.weight ?? 'N/A',
-                type: parcel?.type ?? 'N/A'
+                weight: parcel.weight ?? 'N/A',
+                type: parcel.type ?? 'N/A'
             })) || []
         );
     }, [allParcels, currentPage, pageSize]);
@@ -103,7 +111,10 @@ const MyParcel: React.FC = () => {
     const actions = [
         {
             label: <icons.editIcon />,
-            link: (row: any) => `/dashboard/parcels/edit/${row._id}`
+            onClick: (row: any) => {
+                setAssignParcelData(row);
+                setIsAssignModalOpen(true);
+            }
         },
         {
             label: <icons.deleteIcon />,
@@ -122,6 +133,7 @@ const MyParcel: React.FC = () => {
                 createButtonText='Create'
                 createPageLink='/dashboard/customer/parcel-create'
             />
+
             <CustomPagination
                 totalPages={allParcels?.result?.meta?.totalPage || 1}
                 currentPage={currentPage}
@@ -130,6 +142,8 @@ const MyParcel: React.FC = () => {
                 pageSize={pageSize}
                 onPageSizeChange={setPageSize}
             />
+
+            {/* Delete Confirmation Alert */}
             {alert.isOpen && (
                 <CustomAlert
                     title={alert.title}
@@ -144,8 +158,13 @@ const MyParcel: React.FC = () => {
                     isOpen={alert.isOpen}
                 />
             )}
+            <AssignParcelModal
+                isOpen={isAssignModalOpen}
+                onClose={() => setIsAssignModalOpen(false)}
+                parcelData={assignParcelData}
+            />
         </div>
     );
 };
 
-export default MyParcel;
+export default AssignAgent;

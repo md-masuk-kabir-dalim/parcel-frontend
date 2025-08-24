@@ -15,11 +15,13 @@ export const authRoutes = {
 };
 
 export const usersRoutes = {
-    create: rootUserRoute
+    create: rootUserRoute,
+    getAllUsers: rootUserRoute
 };
 
 //parcel
 export const parcelRoutes = {
     create: rootParcelRoute,
-    getParcelList: rootParcelRoute
+    getParcelList: rootParcelRoute,
+    updateParcel: (id: string) => `${rootParcelRoute}/${id}`
 };

@@ -12,7 +12,6 @@ const DataTable = ({
     headers,
     initialHeaders,
     setSelectHeaders = () => {},
-    getStatusClassName,
     data,
     isFetching = false,
     actions,
@@ -31,20 +30,10 @@ const DataTable = ({
         setSelectHeaders && setSelectHeaders(selected);
     };
 
-    if (isFetching) {
-        return (
-            <div className='flex justify-center items-center py-10'>
-                <Loading /> {/* Your spinner/loading component */}
-            </div>
-        );
-    }
-
     return (
         <div className='overflow-x-auto'>
             <div
-                className={`flex ${
-                    setSearchTerm ? 'justify-between' : 'justify-end'
-                } items-center mb-4 gap-4`}
+                className={`flex ${setSearchTerm ? 'justify-between' : 'justify-end'} items-center mb-4 gap-4`}
             >
                 {setSearchTerm && (
                     <Input
@@ -95,71 +84,81 @@ const DataTable = ({
                         </tr>
                     </thead>
                     <tbody>
-                        {data?.map((row: any, rowIndex: number) => (
-                            <tr
-                                key={rowIndex}
-                                className={`${rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-100'}`}
-                            >
-                                {headers.map(
-                                    (header: any, cellIndex: any) =>
-                                        selectedHeaders.includes(header.key) && (
-                                            <td
-                                                key={cellIndex}
-                                                className='border border-b-white px-2 py-2'
-                                            >
-                                                {(header.key === 'image' && (
-                                                    <Image
-                                                        src={
-                                                            row?.images?.viewUrl || row[header.key]
-                                                        }
-                                                        alt='image'
-                                                        height={50}
-                                                        width={50}
-                                                    />
-                                                )) ||
-                                                    (header?.key === 'status' &&
-                                                        getStatusClassName(row?.status)) || (
-                                                        <>{row[header.key]}</>
-                                                    )}
-                                            </td>
-                                        )
-                                )}
-                                {actions && (
-                                    <td className='flex justify-center items-center my-auto'>
-                                        {actions?.map((action: any, index: number) => (
-                                            <div key={index} className='flex items-center mt-3'>
-                                                {action?.link ? (
-                                                    <Link
-                                                        href={action.link(row)}
-                                                        className={`flex !items-center justify-center rounded-full transition-all ease-in-out duration-300 hover:bg-[#53C1F6] hover:text-white my-auto bg-white border text-[#53C1F6] ${
-                                                            action?.type === 'delete' &&
-                                                            'text-[#EB3223] hover:bg-[#EB3223] hover:text-white'
-                                                        } ms-2 h-8 w-8`}
-                                                        onClick={() => action.onClick(row)}
-                                                    >
-                                                        <span className='text-2xl'>
-                                                            {action.label}
-                                                        </span>
-                                                    </Link>
-                                                ) : (
-                                                    <button
-                                                        className={`flex items-center justify-center my-auto rounded-full bg-white border transition-all ease-in-out duration-300 hover:bg-[#53C1F6] hover:text-white text-[#53C1F6] ${
-                                                            action?.type === 'delete' &&
-                                                            'text-[#EB3223] hover:bg-[#EB3223] hover:text-white'
-                                                        } ms-2 h-8 w-8`}
-                                                        onClick={() => action.onClick(row)}
-                                                    >
-                                                        <span className='text-2xl'>
-                                                            {action.label}
-                                                        </span>
-                                                    </button>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </td>
-                                )}
+                        {isFetching ? (
+                            <tr>
+                                <td
+                                    colSpan={selectedHeaders.length + (actions ? 1 : 0)}
+                                    className='text-center py-4'
+                                >
+                                    <Loading />
+                                </td>
                             </tr>
-                        ))}
+                        ) : (
+                            data?.map((row: any, rowIndex: number) => (
+                                <tr
+                                    key={rowIndex}
+                                    className={`${rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-100'}`}
+                                >
+                                    {headers.map(
+                                        (header: any, cellIndex: any) =>
+                                            selectedHeaders.includes(header.key) && (
+                                                <td
+                                                    key={cellIndex}
+                                                    className='border border-b-white px-2 py-2'
+                                                >
+                                                    {header.key === 'image' ? (
+                                                        <Image
+                                                            src={
+                                                                row?.images?.viewUrl ||
+                                                                row[header.key]
+                                                            }
+                                                            alt='image'
+                                                            height={50}
+                                                            width={50}
+                                                        />
+                                                    ) : (
+                                                        row[header.key]
+                                                    )}
+                                                </td>
+                                            )
+                                    )}
+                                    {actions && (
+                                        <td className='flex justify-center items-center my-auto'>
+                                            {actions.map((action: any, index: number) => (
+                                                <div key={index} className='flex items-center mt-3'>
+                                                    {action?.link ? (
+                                                        <Link
+                                                            href={action.link(row)}
+                                                            className={`flex !items-center justify-center rounded-full transition-all ease-in-out duration-300 hover:bg-[#53C1F6] hover:text-white my-auto bg-white border text-[#53C1F6] ${
+                                                                action?.type === 'delete' &&
+                                                                'text-[#EB3223] hover:bg-[#EB3223] hover:text-white'
+                                                            } ms-2 h-8 w-8`}
+                                                            onClick={() => action.onClick(row)}
+                                                        >
+                                                            <span className='text-2xl'>
+                                                                {action.label}
+                                                            </span>
+                                                        </Link>
+                                                    ) : (
+                                                        <button
+                                                            className={`flex items-center justify-center my-auto rounded-full bg-white border transition-all ease-in-out duration-300 hover:bg-[#53C1F6] hover:text-white text-[#53C1F6] ${
+                                                                action?.type === 'delete' &&
+                                                                'text-[#EB3223] hover:bg-[#EB3223] hover:text-white'
+                                                            } ms-2 h-8 w-8`}
+                                                            onClick={() => action.onClick(row)}
+                                                        >
+                                                            <span className='text-2xl'>
+                                                                {action.label}
+                                                            </span>
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </td>
+                                    )}
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
             )}

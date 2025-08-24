@@ -36,20 +36,26 @@ const Sidebar: React.FC<SidebarProps> = () => {
             icon: <FaHome />
         },
         {
-            label: 'Parcel Bookings',
-            href: '/dashboard/bookings',
+            label: 'Parcel History',
+            href: '/dashboard/admin/parcel-history',
             roles: ['ADMIN'],
             icon: <FaClipboardList />
         },
         {
             label: 'Assign Agents',
-            href: '/dashboard/assign-agent',
+            href: '/dashboard/admin/assign-agent',
             roles: ['ADMIN'],
             icon: <FaTruck />
         },
         {
-            label: 'All Users',
-            href: '/dashboard/users',
+            label: 'Manage Users',
+            href: '/dashboard/admin/manage-user',
+            roles: ['ADMIN'],
+            icon: <FaUser />
+        },
+        {
+            label: 'Manage Agent',
+            href: '/dashboard/admin/manage-agent',
             roles: ['ADMIN'],
             icon: <FaUser />
         },
