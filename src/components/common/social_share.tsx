@@ -13,27 +13,27 @@ const SocialLinkShare: React.FC<SocialLinkShareProps> = ({ canonicalUrl, data })
 
     // Function to share on Facebook
     const shareOnFacebook = () => {
-        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${envConfig.baseUrl}/${encodeURIComponent(canonicalUrl)}&title=${title}&description=${description}&picture=${imageUrl}`;
+        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${envConfig.baseApi}/${encodeURIComponent(canonicalUrl)}&title=${title}&description=${description}&picture=${imageUrl}`;
         window.open(shareUrl, '_blank');
     };
 
     // Function to share on Twitter
     const shareOnTwitter = () => {
-        const shareUrl = `https://twitter.com/intent/tweet?url=${envConfig.baseUrl}/${encodeURIComponent(canonicalUrl)}&text=${title} ${description}`;
+        const shareUrl = `https://twitter.com/intent/tweet?url=${envConfig.baseApi}/${encodeURIComponent(canonicalUrl)}&text=${title} ${description}`;
         window.open(shareUrl, '_blank');
     };
 
     // Function to share on WhatsApp
     const shareOnWhatsapp = () => {
         const message = encodeURIComponent(
-            `${title} ${description} ${envConfig.baseUrl}/${canonicalUrl}`
+            `${title} ${description} ${envConfig.baseApi}/${canonicalUrl}`
         );
         window.open(`https://wa.me/?text=${message}`, '_blank');
     };
 
     // Function to share on Telegram
     const shareOnTelegram = () => {
-        const shareUrl = `https://t.me/share/url?url=${envConfig.baseUrl}/${encodeURIComponent(canonicalUrl)}&text=${title} ${description}`;
+        const shareUrl = `https://t.me/share/url?url=${envConfig.baseApi}/${encodeURIComponent(canonicalUrl)}&text=${title} ${description}`;
         window.open(shareUrl, '_blank');
     };
 
@@ -59,7 +59,7 @@ const SocialLinkShare: React.FC<SocialLinkShareProps> = ({ canonicalUrl, data })
                 <ShareButton
                     onClick={shareOnFacebook}
                     label='Facebook'
-                    icon={<icons.facebookIcon />}
+                    icon={<icons.ArrowRight />}
                     bgColor='bg-[#4267B2] text-white'
                 />
             </div>
@@ -67,7 +67,7 @@ const SocialLinkShare: React.FC<SocialLinkShareProps> = ({ canonicalUrl, data })
                 <ShareButton
                     onClick={shareOnTwitter}
                     label='Twitter'
-                    icon={<icons.Twitter />}
+                    icon={<icons.ArrowRight />}
                     bgColor='bg-black text-white'
                 />
             </div>
@@ -75,7 +75,7 @@ const SocialLinkShare: React.FC<SocialLinkShareProps> = ({ canonicalUrl, data })
                 <ShareButton
                     onClick={shareOnTelegram}
                     label='Telegram'
-                    icon={<icons.telegramIcon />}
+                    icon={<icons.ArrowRight />}
                     bgColor='bg-[#27A7E7] text-white'
                 />
             </div>

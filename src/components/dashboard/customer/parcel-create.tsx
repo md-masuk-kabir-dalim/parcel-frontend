@@ -3,10 +3,11 @@ import React, { useEffect } from 'react';
 import { useForm, FormProvider, useWatch } from 'react-hook-form';
 import { useCreateResourceMutation } from '@/redux/api/curd';
 import useToaster from '@/hooks/useToaster';
-import Input from '@/components/common/input';
 import LocationInput from '@/components/common/Location_Input';
 import { parcelRoutes } from '@/constants/end-point';
 import calculateDistance from '@/lib/helpers/calculate_distance';
+import Input from '@/components/common/input';
+import { useRouter } from 'next/navigation';
 
 const PARCEL_TYPES = [
     'DOCUMENT',
@@ -30,6 +31,7 @@ const PER_KG = 20;
 const PER_KM = 10;
 
 const ParcelCreate: React.FC = () => {
+    const router = useRouter();
     const methods = useForm({
         defaultValues: {
             pickupLocation: { type: 'Point', address: '', coordinates: [0, 0] },
@@ -47,7 +49,7 @@ const ParcelCreate: React.FC = () => {
         }
     });
 
-    const { handleSubmit, reset, register, setValue, control } = methods;
+    const { handleSubmit, register, reset, setValue, control } = methods;
     const [createParcel, { isLoading }] = useCreateResourceMutation();
     const showToast = useToaster();
 
@@ -64,15 +66,20 @@ const ParcelCreate: React.FC = () => {
     }, [weight, pickup, dropoff, setValue]);
 
     const onSubmit = async (values: any) => {
+        values.weight = Number(values.weight);
         console.log(values);
+
         try {
             const res: any = await createParcel({
                 url: parcelRoutes.create,
                 payload: values
             }).unwrap();
-            if (res?.isSuccess) {
+            if (res?.success) {
                 showToast('success', 'Parcel created successfully');
                 reset();
+                router.push('/dashboard/customer/my-parcel');
+            } else {
+                showToast('error', 'Failed to create parcel');
             }
         } catch (error: any) {
             showToast('error', error?.data?.message || 'Something went wrong');
@@ -141,7 +148,7 @@ const ParcelCreate: React.FC = () => {
                         disabled={isLoading}
                         className='w-full bg-blue text-white py-2 rounded-md hover:bg-blue-700 transition'
                     >
-                        {isLoading ? 'Saving…' : 'Create Parcel'}
+                        {isLoading ? 'save..........' : 'create parcel'}
                     </button>
                 </form>
             </FormProvider>

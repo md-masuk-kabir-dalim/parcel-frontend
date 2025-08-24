@@ -8,7 +8,7 @@ const useToaster = () => {
             toast.success(message, {
                 description: description,
                 action: {
-                    label: <icons.crossIcons />,
+                    label: <icons.BriefcaseIcon />,
                     onClick: () => {}
                 }
             });
@@ -16,7 +16,7 @@ const useToaster = () => {
             toast.error(message, {
                 description: description,
                 action: {
-                    label: <icons.crossIcons />,
+                    label: <icons.ArrowRight />,
                     onClick: () => {}
                 }
             });
@@ -24,7 +24,7 @@ const useToaster = () => {
             toast.warning(message, {
                 description: description,
                 action: {
-                    label: <icons.crossIcons />,
+                    label: <icons.ArrowRight />,
                     onClick: () => {}
                 }
             });

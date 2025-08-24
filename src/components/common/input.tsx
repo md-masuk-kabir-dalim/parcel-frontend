@@ -1,5 +1,5 @@
-"use client"
-import React from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
 import { useFormContext, FieldError } from 'react-hook-form';
 
 const Input: React.FC<InputProps> = ({
@@ -24,6 +24,12 @@ const Input: React.FC<InputProps> = ({
         formState: { errors }
     } = useFormContext();
 
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     const getNestedError = (name: string, errors: any): string | undefined => {
         const keys = name.split('.');
         let nestedError = errors;
@@ -41,6 +47,8 @@ const Input: React.FC<InputProps> = ({
 
     const errorMessage = getNestedError(name, errors);
 
+    if (!mounted) return null;
+
     return (
         <div className={`${formClassName}`}>
             <label htmlFor={name} className={`${labelClassName}`}>
@@ -51,12 +59,12 @@ const Input: React.FC<InputProps> = ({
                 <textarea
                     id={name}
                     rows={row}
-                    defaultValue={defaultValue}
+                    defaultValue={defaultValue ?? ''}
                     value={value}
                     className={`${
                         errorMessage ? 'border border-red-200 bg-red-50' : ''
                     } ${className} w-full p-2 border rounded-md drop-shadow-sm`}
-                    placeholder={placeholder}
+                    placeholder={placeholder ?? ''}
                     disabled={disabled}
                     {...register(name, {
                         ...rules,
@@ -69,7 +77,7 @@ const Input: React.FC<InputProps> = ({
                         errorMessage ? 'border border-red-200 bg-red-50' : ''
                     } w-full p-2 border border-gray-300 rounded-md outline-none drop-shadow-sm`}
                     type={type}
-                    defaultValue={defaultValue}
+                    defaultValue={defaultValue ?? ''}
                     value={value}
                     id={name}
                     placeholder={placeholder}

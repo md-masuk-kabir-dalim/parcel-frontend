@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useLoadScript, GoogleMap, Marker, Autocomplete } from '@react-google-maps/api';
 import { envConfig } from '@/lib/helpers/envConfig';
 
@@ -24,22 +24,26 @@ const LocationPickerMap: React.FC<Props> = ({ value, onChange, label }) => {
         libraries: ['places']
     });
 
-    const safeValue: LocationValue = value || {
-        type: 'Point',
-        address: '',
-        coordinates: [0, 0]
-    };
+    // safe value
+    const safeValue: LocationValue = value || { type: 'Point', address: '', coordinates: [0, 0] };
 
-    const [marker, setMarker] = useState<{ lat: number, lng: number } | null>(
-        safeValue.coordinates[0] && safeValue.coordinates[1]
-            ? { lat: safeValue.coordinates[1], lng: safeValue.coordinates[0] }
-            : null
-    );
-    const [center, setCenter] = useState(marker || defaultCenter);
+    // SSR-safe state: initially null, only set on client
+    const [marker, setMarker] = useState<{ lat: number, lng: number } | null>(null);
+    const [center, setCenter] = useState(defaultCenter);
     const [address, setAddress] = useState(safeValue.address || '');
 
     const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
     const mapRef = useRef<google.maps.Map | null>(null);
+
+    // Initialize marker & center on client only
+    useEffect(() => {
+        if (safeValue.coordinates[0] && safeValue.coordinates[1]) {
+            const initialMarker = { lat: safeValue.coordinates[1], lng: safeValue.coordinates[0] };
+            setMarker(initialMarker);
+            setCenter(initialMarker);
+            setAddress(safeValue.address || '');
+        }
+    }, [safeValue.coordinates, safeValue.address]);
 
     const onMapLoad = useCallback((map: google.maps.Map) => {
         mapRef.current = map;
@@ -66,7 +70,7 @@ const LocationPickerMap: React.FC<Props> = ({ value, onChange, label }) => {
         }
     };
 
-    const handleMapClick = async (e: google.maps.MapMouseEvent) => {
+    const handleMapClick = (e: google.maps.MapMouseEvent) => {
         const lat = e.latLng?.lat();
         const lng = e.latLng?.lng();
         if (lat && lng) {
@@ -79,9 +83,10 @@ const LocationPickerMap: React.FC<Props> = ({ value, onChange, label }) => {
     };
 
     if (!isLoaded) return <div>Loading map…</div>;
+    if (!envConfig.google_api_key) return <div>Google Maps API key missing!</div>;
 
     return (
-        <div className='mb-4'>
+        <div className='mb-4' suppressHydrationWarning>
             {label && <label className='block mb-1 font-medium'>{label}</label>}
             <Autocomplete
                 onLoad={(ref) => (autocompleteRef.current = ref)}
@@ -90,7 +95,7 @@ const LocationPickerMap: React.FC<Props> = ({ value, onChange, label }) => {
                 <input
                     type='text'
                     placeholder='Search location'
-                    value={address}
+                    value={address ?? ''}
                     onChange={(e) => setAddress(e.target.value)}
                     className='w-full mb-2 px-4 py-2 border rounded-lg'
                 />

@@ -34,6 +34,7 @@ import { CiFileOn } from 'react-icons/ci';
 import { GrCurrency } from 'react-icons/gr';
 import { FaCodeCompare } from 'react-icons/fa6';
 import { TbExchange } from 'react-icons/tb';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { FaApple } from 'react-icons/fa';
 export const icons = {
     dropdown: MdArrowDropDown,
@@ -76,5 +77,6 @@ export const icons = {
     TbExchangeIcons: TbExchange,
     FaAppleIcons: FaApple,
     FavoriteBorder: MdFavoriteBorder,
-    truckDelivaryIcon: TbTruckDelivery
+    truckDelivaryIcon: TbTruckDelivery,
+    loading: AiOutlineLoading3Quarters
 };

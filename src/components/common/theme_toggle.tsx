@@ -29,13 +29,13 @@ const ThemeToggle = () => {
             ></div>
 
             {/* Sun icon for light mode */}
-            <icons.LightIcons
+            <icons.ArrowRight
                 className={`h-5 w-5 flex text-yellow-600 absolute left-2 transition-opacity duration-300 ${
                     mode === 'light' ? 'opacity-100' : 'opacity-0'
                 }`}
             />
             {/* Moon icon for dark mode */}
-            <icons.DrakIcons
+            <icons.ArrowRight
                 className={`h-5 w-5 text-white-light absolute right-2 transition-opacity duration-300 ${
                     mode === 'dark' ? 'opacity-100' : 'opacity-0'
                 }`}

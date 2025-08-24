@@ -38,7 +38,7 @@ const SheetDrawer: React.FC<SheetDrawerProps> = ({
                 style={{ overflow: 'auto' }}
             >
                 <div className='flex gap-4 items-center mb-4'>
-                    <icons.arrowBackIcons
+                    <icons.ArrowRight
                         onClick={toggleDrawer}
                         className='text-3xl text-primary hover:text-primary cursor-pointer'
                     />

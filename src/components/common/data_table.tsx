@@ -6,20 +6,20 @@ import { Button } from '@/components/ui/button';
 import { icons } from '@/constants/icons';
 import Image from 'next/image';
 import DropdownMenus from './dropdown_menu';
+import Loading from '@/components/shared/loading';
 
 const DataTable = ({
     headers,
-    searchInputField,
     initialHeaders,
     setSelectHeaders = () => {},
     getStatusClassName,
     data,
+    isFetching = false,
     actions,
     setSearchTerm,
     createButtonText,
     createPageLink
 }: any) => {
-    // Initially select the first three headers
     const initialSelectedHeaders = headers.slice(0, 4).map((header: any) => header.key);
 
     const [selectedHeaders, setSelectedHeaders] = useState(
@@ -31,9 +31,13 @@ const DataTable = ({
         setSelectHeaders && setSelectHeaders(selected);
     };
 
-    const handleResetHeaders = () => {
-        setSelectedHeaders(initialSelectedHeaders);
-    };
+    if (isFetching) {
+        return (
+            <div className='flex justify-center items-center py-10'>
+                <Loading /> {/* Your spinner/loading component */}
+            </div>
+        );
+    }
 
     return (
         <div className='overflow-x-auto'>
@@ -45,14 +49,14 @@ const DataTable = ({
                 {setSearchTerm && (
                     <Input
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className='w-2/4 border border-_primary outline-none focus:border-transparent'
+                        className='w-2/4 border border-blue outline-none'
                         placeholder='Search'
                     />
                 )}
                 <div className='flex items-center gap-5'>
                     {createButtonText && (
                         <Link href={`${createPageLink}`}>
-                            <Button className='hover:underline flex justify-center items-center gap-2 w-44'>
+                            <Button className='hover:underline flex justify-center text-white items-center gap-2 px-5'>
                                 <icons.createIcon className='text-lg' /> {createButtonText}
                             </Button>
                         </Link>
@@ -69,7 +73,7 @@ const DataTable = ({
             </div>
 
             {selectedHeaders.length > 0 && (
-                <table className='table-auto  w-full border-collapse border border-b-white bg-_white'>
+                <table className='table-auto w-full border-collapse border border-b-white bg-white'>
                     <thead>
                         <tr>
                             {headers?.map(
@@ -77,15 +81,14 @@ const DataTable = ({
                                     selectedHeaders.includes(header.key) && (
                                         <th
                                             key={index}
-                                            className='border  border-b-white bg-_primary text-_white font-semibold px-4 py-3 text-center'
+                                            className='border border-b-white bg-blue text-white font-semibold px-4 py-3 text-center'
                                         >
                                             {header.text}
                                         </th>
                                     )
                             )}
-                            {/* Add column for actions */}
                             {actions && (
-                                <th className='px-4 py-3 font-semibold bg-_primary text-white text-start'>
+                                <th className='px-4 py-3 font-semibold bg-blue text-white text-start'>
                                     Actions
                                 </th>
                             )}
@@ -95,28 +98,24 @@ const DataTable = ({
                         {data?.map((row: any, rowIndex: number) => (
                             <tr
                                 key={rowIndex}
-                                className={`${rowIndex % 2 === 0 ? 'bg-[#fffff]' : 'bg-slate-100'}`}
+                                className={`${rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-100'}`}
                             >
                                 {headers.map(
                                     (header: any, cellIndex: any) =>
                                         selectedHeaders.includes(header.key) && (
                                             <td
                                                 key={cellIndex}
-                                                className='border border-b-white px-2 py-2 '
+                                                className='border border-b-white px-2 py-2'
                                             >
                                                 {(header.key === 'image' && (
-                                                    <>
-                                                        <Image
-                                                            src={
-                                                                row?.images?.viewUrl ||
-                                                                row[header.key]
-                                                            }
-                                                            alt='image'
-                                                            height={50}
-                                                            width={50}
-                                                            className=''
-                                                        />
-                                                    </>
+                                                    <Image
+                                                        src={
+                                                            row?.images?.viewUrl || row[header.key]
+                                                        }
+                                                        alt='image'
+                                                        height={50}
+                                                        width={50}
+                                                    />
                                                 )) ||
                                                     (header?.key === 'status' &&
                                                         getStatusClassName(row?.status)) || (
@@ -125,7 +124,6 @@ const DataTable = ({
                                             </td>
                                         )
                                 )}
-                                {/* Render action buttons */}
                                 {actions && (
                                     <td className='flex justify-center items-center my-auto'>
                                         {actions?.map((action: any, index: number) => (
@@ -133,9 +131,9 @@ const DataTable = ({
                                                 {action?.link ? (
                                                     <Link
                                                         href={action.link(row)}
-                                                        className={`flex !items-center justify-center rounded-full transition-all ease-in-out duration-300 hover:bg-[#53C1F6] hover:text-_white my-auto bg-white border text-[#53C1F6] ${
-                                                            action?.type == 'delete' &&
-                                                            'text-[#EB3223] hover:bg-[#EB3223] transition-all ease-in-out duration-300 hover:text-_white'
+                                                        className={`flex !items-center justify-center rounded-full transition-all ease-in-out duration-300 hover:bg-[#53C1F6] hover:text-white my-auto bg-white border text-[#53C1F6] ${
+                                                            action?.type === 'delete' &&
+                                                            'text-[#EB3223] hover:bg-[#EB3223] hover:text-white'
                                                         } ms-2 h-8 w-8`}
                                                         onClick={() => action.onClick(row)}
                                                     >
@@ -145,12 +143,9 @@ const DataTable = ({
                                                     </Link>
                                                 ) : (
                                                     <button
-                                                        className={`flex items-center justify-center my-auto rounded-full bg-white border transition-all ease-in-out duration-300 hover:bg-[#53C1F6] hover:text-_white text-[#53C1F6] ${
-                                                            action?.type == 'delete' &&
-                                                            'text-[#EB3223] hover:bg-[#EB3223] transition-all ease-in-out duration-300 hover:text-_white'
-                                                        }  ${
-                                                            action?.type == 'details' &&
-                                                            ' text-black hover:text-_white'
+                                                        className={`flex items-center justify-center my-auto rounded-full bg-white border transition-all ease-in-out duration-300 hover:bg-[#53C1F6] hover:text-white text-[#53C1F6] ${
+                                                            action?.type === 'delete' &&
+                                                            'text-[#EB3223] hover:bg-[#EB3223] hover:text-white'
                                                         } ms-2 h-8 w-8`}
                                                         onClick={() => action.onClick(row)}
                                                     >

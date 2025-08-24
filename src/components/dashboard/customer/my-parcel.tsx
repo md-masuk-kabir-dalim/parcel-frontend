@@ -1,69 +1,76 @@
 'use client';
-import React, { useState } from 'react';
-import { icons } from '@/constants/icons';
-import useToaster from '@/hooks/useToaster';
+import React, { useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useDeleteResourceMutation, useFetchResourceQuery } from '@/redux/api/curd';
+import { useFetchResourceQuery, useDeleteResourceMutation } from '@/redux/api/curd';
 import { hideAlert, showAlert } from '@/redux/features/action/alertActions';
 import { useDebounced } from '@/hooks/useDebounce';
+import useToaster from '@/hooks/useToaster';
 import Loading from '@/components/shared/loading';
 import DataTable from '@/components/common/data_table';
 import CustomPagination from '@/components/common/custom_pagination';
 import { CustomAlert } from '@/components/common/alert_dialog';
 import { parcelRoutes } from '@/constants/end-point';
+import { icons } from '@/constants/icons';
 
-const MyParcel = () => {
+const MyParcel: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(10);
-    const [searchTerm, setSearchTerm] = useState('');
-    const showToast = useToaster();
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
     const dispatch = useDispatch();
     const alert = useSelector((state: any) => state.alert);
-    const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
+    const showToast = useToaster();
 
-    // ✅ Fetch parcels
+    // Debounced search term
+    const debouncedSearchTerm = useDebounced({
+        searchQuery: searchTerm,
+        delay: 600
+    });
+
     const {
         data: allParcels,
-        isLoading,
+        isFetching,
         refetch
     } = useFetchResourceQuery({
         url: parcelRoutes.getParcelList,
         params: {
             page: currentPage,
             limit: pageSize,
-            searchText: searchTerm
+            searchText: debouncedSearchTerm
         }
     });
-    console.log(allParcels);
+
     const [deleteParcel] = useDeleteResourceMutation();
 
+    // Table headers
     const headers = [
         { text: '#', key: 'sl' },
-        { text: 'Image', key: 'image' },
-        { text: 'Title', key: 'title' },
-        { text: 'Customer', key: 'customer' }
+        { text: 'Parcel ID', key: 'parcelId' },
+        { text: 'Customer', key: 'customer' },
+        { text: 'Pickup', key: 'pickupLocation' },
+        { text: 'Dropoff', key: 'dropoffLocation' },
+        { text: 'Weight', key: 'weight' },
+        { text: 'Type', key: 'type' },
+        { text: 'Status', key: 'status' }
     ];
 
-    const handleConfirm = async () => {
-        if (deleteItemId) {
-            try {
-                const res: any = await deleteParcel({
-                    url: `/parcels/${deleteItemId}`
-                }).unwrap();
+    const tableData = useMemo(() => {
+        return (
+            allParcels?.result?.data?.map((parcel: any, index: number) => ({
+                sl: index + 1 + (currentPage - 1) * pageSize,
+                _id: parcel.id,
+                parcelId: parcel.parcelId,
+                customer: parcel.customer?.username || 'N/A',
+                pickupLocation: parcel.pickupLocation?.address || 'N/A',
+                dropoffLocation: parcel.dropoffLocation?.address || 'N/A',
+                weight: parcel.weight,
+                type: parcel.type,
+                status: parcel.status
+            })) || []
+        );
+    }, [allParcels, currentPage, pageSize]);
 
-                if (res?.isSuccess) {
-                    showToast('success', 'Parcel deleted successfully');
-                    refetch();
-                }
-            } catch (error) {
-                showToast('error', `${error}`);
-            } finally {
-                setDeleteItemId(null);
-                dispatch(hideAlert());
-            }
-        }
-    };
-
+    // Delete handlers
     const handleShowDeleteAlert = (id: string) => {
         setDeleteItemId(id);
         dispatch(
@@ -77,40 +84,41 @@ const MyParcel = () => {
         );
     };
 
+    const handleConfirmDelete = async () => {
+        if (!deleteItemId) return;
+        try {
+            const res: any = await deleteParcel({ url: `/parcels/${deleteItemId}` }).unwrap();
+            if (res?.isSuccess) {
+                showToast('success', 'Parcel deleted successfully');
+                refetch();
+            }
+        } catch (error: any) {
+            showToast('error', error?.data?.message || 'Something went wrong');
+        } finally {
+            setDeleteItemId(null);
+            dispatch(hideAlert());
+        }
+    };
+
+    // Actions for each row
     const actions = [
         {
             label: <icons.editIcon />,
-            link: (row: any) => `/dashboard/parcels/edit/${row?._id}`
+            link: (row: any) => `/dashboard/parcels/edit/${row._id}`
         },
         {
             label: <icons.deleteIcon />,
-            onClick: (row: any) => handleShowDeleteAlert(row?._id)
+            onClick: (row: any) => handleShowDeleteAlert(row._id)
         }
     ];
-
-    // ✅ Debounced Search
-    const debouncedSearchTerm = useDebounced({
-        searchQuery: searchTerm,
-        delay: 600
-    });
-
-    // ✅ Table Data Mapping (backend → table)
-    const tableData = allParcels?.result?.data?.map((parcel: any, index: number) => ({
-        sl: index + 1 + (currentPage - 1) * pageSize,
-        _id: parcel?.id,
-        image: parcel?.images?.viewUrl || '',
-        title: parcel?.title || '',
-        customer: parcel?.customer?.username || ''
-    }));
-
-    if (isLoading) return <Loading />;
 
     return (
         <div className='pt-5 pb-10'>
             <DataTable
                 headers={headers}
-                data={[]}
+                data={tableData}
                 actions={actions}
+                isFetching={isFetching}
                 setSearchTerm={setSearchTerm}
                 createButtonText='Create'
                 createPageLink='/dashboard/customer/parcel-create'
@@ -129,7 +137,7 @@ const MyParcel = () => {
                     description={alert.description}
                     confirmLabel={alert.confirmLabel}
                     cancelLabel={alert.cancelLabel}
-                    onConfirm={handleConfirm}
+                    onConfirm={handleConfirmDelete}
                     onCancel={() => {
                         setDeleteItemId(null);
                         dispatch(hideAlert());

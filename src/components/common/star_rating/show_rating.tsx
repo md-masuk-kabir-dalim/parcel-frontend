@@ -20,7 +20,7 @@ const ShowRating: React.FC<ShowRatingProps> = ({
             <div className='flex items-center gap-1'>
                 {/* Full stars */}
                 {Array.from({ length: fullStars }).map((_, index) => (
-                    <icons.IoStarIcons
+                    <icons.ArrowRight
                         key={`full-${index}`}
                         className={cn('text-yellow-800', `text-${textSize}`, 'md:text-xl')}
                         aria-label={`Star ${index + 1}`}
@@ -29,7 +29,7 @@ const ShowRating: React.FC<ShowRatingProps> = ({
 
                 {/* Half star */}
                 {halfStar && (
-                    <icons.halfStarIcon
+                    <icons.ArrowRight
                         key='half-star'
                         className={cn('text-yellow-800', `text-${textSize}`, 'md:text-xl')}
                         aria-label='Half star'
@@ -38,7 +38,7 @@ const ShowRating: React.FC<ShowRatingProps> = ({
 
                 {/* Empty stars */}
                 {Array.from({ length: emptyStars }).map((_, index) => (
-                    <icons.IoStarOutlineIcon
+                    <icons.ArrowRight
                         key={`empty-${index}`}
                         className={cn('text-yellow-800', `text-${textSize}`, 'md:text-xl')}
                         aria-label={`Empty star ${index + 1}`}

@@ -23,12 +23,12 @@ export const renderStars = (
         >
             {roundedAvg > idx ? (
                 roundedAvg - idx === 0.5 ? (
-                    <icons.halfStarIcon className='text-yellow-800 text-xl' />
+                    <icons.ArrowRight className='text-yellow-800 text-xl' />
                 ) : (
-                    <icons.IoStarIcons className='text-yellow-800 text-xl' />
+                    <icons.ArrowRight className='text-yellow-800 text-xl' />
                 )
             ) : (
-                <icons.IoStarOutlineIcon className='text-yellow-800 text-xl' />
+                <icons.ArrowRight className='text-yellow-800 text-xl' />
             )}
         </span>
     ));
