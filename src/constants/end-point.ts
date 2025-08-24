@@ -25,7 +25,8 @@ export const parcelRoutes = {
     create: rootParcelRoute,
     getParcelList: rootParcelRoute,
     updateParcel: (id: string) => `${rootParcelRoute}/${id}`,
-    deleteParcel: (id: string) => `${rootParcelRoute}/${id}`
+    deleteParcel: (id: string) => `${rootParcelRoute}/${id}`,
+    getSingleParcel: (id: string) => `${rootParcelRoute}/${id}`
 };
 
 //admin

@@ -5,10 +5,10 @@ import { useCreateResourceMutation } from '@/redux/api/curd';
 import useToaster from '@/hooks/useToaster';
 import LocationInput from '@/components/common/Location_Input';
 import { parcelRoutes } from '@/constants/end-point';
-import calculateDistance from '@/lib/helpers/calculate_distance';
 import Input from '@/components/common/input';
 import { useRouter } from 'next/navigation';
 import { tagTypes } from '@/redux/tag-types';
+import { calculateDistance } from '@/lib/helpers/calculate_distance';
 
 const PARCEL_TYPES = [
     'DOCUMENT',
@@ -74,7 +74,7 @@ const ParcelCreate: React.FC = () => {
             const res: any = await createParcel({
                 url: parcelRoutes.create,
                 payload: values,
-                tags:tagTypes.parcelList
+                tags: tagTypes.parcelList
             }).unwrap();
             if (res?.success) {
                 showToast('success', 'Parcel created successfully');
