@@ -1,69 +1,53 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
 import { GoogleMap, DirectionsRenderer, useJsApiLoader, OverlayView } from '@react-google-maps/api';
-import { FaTruck, FaUserCheck } from 'react-icons/fa';
+import { FaTruck, FaUserCheck, FaBox } from 'react-icons/fa';
 import { envConfig } from '@/lib/helpers/envConfig';
 
 type Location = { lat: number; lng: number };
 type Library = 'places' | 'drawing' | 'geometry' | 'visualization';
 const libraries: Library[] = ['places'];
 
-const TrackMap = () => {
+interface TrackMapProps {
+  pickupLocation: Location;
+  dropoffLocation: Location;
+  agentLocation: Location;
+}
+
+const TrackMap: React.FC<TrackMapProps> = ({ pickupLocation, dropoffLocation, agentLocation }) => {
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
-  const [agentPosition, setAgentPosition] = useState<Location>({ lat: 23.8103, lng: 90.4125 });
-  const [pathCoords, setPathCoords] = useState<Location[]>([]);
   const [eta, setEta] = useState<string>('');
-  const stepIndex = useRef(0);
   const mapRef = useRef<google.maps.Map | null>(null);
-  const customerPosition: Location = { lat: 24.3000, lng: 91.8000 };
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: envConfig.google_api_key!,
     libraries,
   });
 
+  // calculate route from pickup → dropoff
   useEffect(() => {
-    if (!isLoaded) return;
-    const origin = { lat: 23.8103, lng: 90.4125 };
-    const destination = customerPosition;
+    if (!isLoaded || !pickupLocation || !dropoffLocation) return;
+
     const directionsService = new google.maps.DirectionsService();
     directionsService.route(
       {
-        origin,
-        destination,
+        origin: pickupLocation,
+        destination: dropoffLocation,
         travelMode: google.maps.TravelMode.DRIVING,
-        drivingOptions: { departureTime: new Date(), trafficModel: google.maps.TrafficModel.BEST_GUESS }
+        drivingOptions: {
+          departureTime: new Date(),
+          trafficModel: google.maps.TrafficModel.BEST_GUESS,
+        },
       },
       (result, status) => {
         if (status === 'OK' && result?.routes?.length) {
           setDirections(result);
-          const routeSteps = result.routes[0].legs?.[0]?.steps ?? [];
-          const coords: Location[] = [];
-          routeSteps.forEach(step =>
-            step.path.forEach(p => coords.push({ lat: p.lat(), lng: p.lng() }))
-          );
-          setPathCoords(coords);
           const duration = result.routes[0].legs?.[0]?.duration?.text ?? '';
           setEta(duration);
         }
       }
     );
-  }, [isLoaded]);
-
-  // Animate agent along route
-  useEffect(() => {
-    if (!pathCoords.length) return;
-
-    const interval = setInterval(() => {
-      setAgentPosition(pathCoords[stepIndex.current]);
-      stepIndex.current += 1;
-      if (stepIndex.current >= pathCoords.length) clearInterval(interval);
-
-      mapRef.current?.panTo(pathCoords[stepIndex.current] || pathCoords[pathCoords.length - 1]);
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [pathCoords]);
+  }, [isLoaded, pickupLocation, dropoffLocation]);
 
   if (!isLoaded) return <div>Loading Map...</div>;
 
@@ -71,32 +55,38 @@ const TrackMap = () => {
     <div className="bg-white shadow-md rounded-sm p-6">
       <h2 className="text-lg font-bold text-gray-800 mb-2">Live Delivery Tracking</h2>
       <p className="mb-4 text-gray-600">
-        Estimated Time Remaining: <span className="font-semibold">{eta}</span>
+        Estimated Time Remaining: <span className="font-semibold">{eta || 'Calculating...'}</span>
       </p>
 
       <GoogleMap
-        center={agentPosition}
-        zoom={8}
+        center={agentLocation || pickupLocation}
+        zoom={10}
         mapContainerClassName="h-96 w-full rounded-lg"
-        onLoad={map => { mapRef.current = map; }}
+        onLoad={(map) => {
+          mapRef.current = map;
+        }}
         options={{ streetViewControl: false, mapTypeControl: false, fullscreenControl: false }}
       >
-        <OverlayView
-          position={agentPosition}
-          mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-        >
+        {/* Pickup */}
+        <OverlayView position={pickupLocation} mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}>
+          <div className="flex flex-col items-center text-green-600 text-2xl">
+            <FaBox />
+            <span className="text-xs font-semibold bg-white px-1 rounded shadow">Pickup</span>
+          </div>
+        </OverlayView>
+
+        {/* Agent (live) */}
+        <OverlayView position={agentLocation} mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}>
           <div className="flex flex-col items-center animate-bounce text-blue-600 text-2xl">
             <FaTruck />
             <span className="text-xs font-semibold bg-white px-1 rounded shadow">Agent</span>
           </div>
         </OverlayView>
 
-        <OverlayView
-          position={customerPosition}
-          mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-        >
+        {/* Dropoff */}
+        <OverlayView position={dropoffLocation} mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}>
           <div className="flex flex-col items-center text-red-600 text-2xl">
-            <FaUserCheck  />
+            <FaUserCheck />
             <span className="text-xs font-semibold bg-white px-1 rounded shadow">Customer</span>
           </div>
         </OverlayView>
@@ -107,7 +97,7 @@ const TrackMap = () => {
             directions={directions}
             options={{
               suppressMarkers: true,
-              polylineOptions: { strokeColor: '#1E40AF', strokeWeight: 6 }
+              polylineOptions: { strokeColor: '#1E40AF', strokeWeight: 6 },
             }}
           />
         )}

@@ -4,7 +4,6 @@ import {
     FaBox,
     FaShippingFast,
     FaTruck,
-    FaMapMarkedAlt,
     FaCheckCircle,
     FaUserCheck,
     FaTimesCircle
@@ -13,6 +12,7 @@ import { useFetchResourceQuery } from '@/redux/api/curd';
 import { tagTypes } from '@/redux/tag-types';
 import { parcelRoutes } from '@/constants/end-point';
 import Loading from '@/components/shared/loading';
+import TrackMap from './track-map';
 
 enum PARCEL_STATUS {
     UNASSIGNED = 'UNASSIGNED',
@@ -26,6 +26,7 @@ enum PARCEL_STATUS {
 const ParcelTracking = () => {
     const [parcelId, setParcelId] = useState<string>('');
     const [isCall, setIsCall] = useState<boolean>(false);
+
     const { data: parcelData, isFetching } = useFetchResourceQuery(
         {
             url: parcelRoutes.getSingleParcel(parcelId),
@@ -34,16 +35,14 @@ const ParcelTracking = () => {
         { skip: !isCall }
     );
 
-    const handleCall = (payload: boolean) => {
-        console.log('hit');
-        setIsCall(payload);
-    };
-    console.log(parcelData);
+    const handleCall = () => setIsCall(true);
 
-    if (isFetching) {
-        return <Loading />;
-    }
-    const currentStatus = parcelData?.status || 'PICKED_UP';
+    if (isFetching) return <Loading />;
+
+    // Use dynamic parcel data
+    const parcel = parcelData?.result;
+    const currentStatus = parcel?.status || PARCEL_STATUS.UNASSIGNED;
+
     const steps = [
         { label: 'Order Placed', value: PARCEL_STATUS.UNASSIGNED, icon: <FaBox /> },
         { label: 'Assigned', value: PARCEL_STATUS.ASSIGNED, icon: <FaUserCheck /> },
@@ -69,7 +68,8 @@ const ParcelTracking = () => {
                         className='flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none'
                     />
                     <button
-                        onClick={() => handleCall(true)}
+                        onClick={handleCall}
+                        disabled={isFetching}
                         className='bg-blue text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition'
                     >
                         Track
@@ -77,13 +77,18 @@ const ParcelTracking = () => {
                 </div>
             </div>
 
-            {/* 📦 Tracking Info Card */}
+            {/* Tracking Info Card */}
             <div className='bg-white shadow-md rounded-lg p-6'>
                 <p className='text-gray-600'>
-                    Tracking ID: <span className='font-semibold'>#123456789</span>
+                    Tracking ID: <span className='font-semibold'>{parcel?.parcelId || '-'}</span>
                 </p>
                 <p className='text-gray-600'>
-                    Estimated Delivery: <span className='font-semibold'>28 Aug, 2025</span>
+                    Estimated Delivery:{' '}
+                    <span className='font-semibold'>
+                        {parcel?.createdAt
+                            ? new Date(parcel.createdAt).toLocaleDateString()
+                            : 'Not Available'}
+                    </span>
                 </p>
             </div>
 
@@ -96,7 +101,6 @@ const ParcelTracking = () => {
                             key={step.value}
                             className='flex-1 flex flex-col items-center text-center relative'
                         >
-                            {/* Circle with icon */}
                             <div
                                 className={`w-12 h-12 flex items-center justify-center rounded-full border-2 shadow-md z-10
                   ${
@@ -107,8 +111,6 @@ const ParcelTracking = () => {
                             >
                                 {step.icon}
                             </div>
-
-                            {/* Label */}
                             <p
                                 className={`mt-2 text-sm font-medium ${
                                     index <= currentIndex ? 'text-blue' : 'text-gray-500'
@@ -120,32 +122,71 @@ const ParcelTracking = () => {
                     ))}
                 </div>
             </div>
+
             {/* map */}
-            {/* <TrackMap /> */}
+            <TrackMap
+                pickupLocation={{
+                    lat: parcel?.pickupLocation?.coordinates?.[1],
+                    lng: parcel?.pickupLocation?.coordinates?.[0]
+                }}
+                dropoffLocation={{
+                    lat: parcel?.dropoffLocation?.coordinates?.[1],
+                    lng: parcel?.dropoffLocation?.coordinates?.[0]
+                }}
+                agentLocation={{ lat: 23.763579, lng: 90.3995551 }} // replace with real agent live position
+            />
 
             {/* Parcel Details */}
             <div className='bg-white shadow-md rounded-lg p-6'>
                 <h2 className='text-lg font-bold text-gray-800 mb-4'>Parcel Details</h2>
-                <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700'>
-                    <p>
-                        <span className='font-semibold'>Sender:</span> Masuk Kabir
-                    </p>
-                    <p>
-                        <span className='font-semibold'>Receiver:</span> Dalim Hasan
-                    </p>
-                    <p>
-                        <span className='font-semibold'>Weight:</span> 2.5 KG
-                    </p>
-                    <p>
-                        <span className='font-semibold'>Type:</span> Electronics
-                    </p>
-                    <p>
-                        <span className='font-semibold'>Pickup:</span> Dhaka, Bangladesh
-                    </p>
-                    <p>
-                        <span className='font-semibold'>Delivery:</span> Chattogram, Bangladesh
-                    </p>
-                </div>
+                {parcel ? (
+                    <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700'>
+                        <p>
+                            <span className='font-semibold'>Sender:</span>{' '}
+                            {parcel.pickupContactName || parcel.customer?.email || '-'}
+                        </p>
+                        <p>
+                            <span className='font-semibold'>Sender Phone:</span>{' '}
+                            {parcel.pickupContactPhone || '-'}
+                        </p>
+                        <p>
+                            <span className='font-semibold'>Receiver:</span>{' '}
+                            {parcel.dropoffContactName || parcel.agent?.email || '-'}
+                        </p>
+                        <p>
+                            <span className='font-semibold'>Receiver Phone:</span>{' '}
+                            {parcel.dropoffContactPhone || '-'}
+                        </p>
+                        <p>
+                            <span className='font-semibold'>Weight:</span> {parcel.weight} KG
+                        </p>
+                        <p>
+                            <span className='font-semibold'>Type:</span> {parcel.type}
+                        </p>
+                        <p>
+                            <span className='font-semibold'>Pickup:</span>{' '}
+                            {parcel.pickupLocation?.address || '-'}
+                        </p>
+                        <p>
+                            <span className='font-semibold'>Delivery:</span>{' '}
+                            {parcel.dropoffLocation?.address || '-'}
+                        </p>
+                        <p>
+                            <span className='font-semibold'>Payment Mode:</span>{' '}
+                            {parcel.paymentMode || '-'}
+                        </p>
+                        <p>
+                            <span className='font-semibold'>Delivery Fee:</span>{' '}
+                            {parcel.deliveryFee}
+                        </p>
+                        <p>
+                            <span className='font-semibold'>Total Amount:</span>{' '}
+                            {parcel.totalAmount}
+                        </p>
+                    </div>
+                ) : (
+                    <p className='text-gray-500'>Enter a tracking ID to see parcel details.</p>
+                )}
             </div>
         </div>
     );
