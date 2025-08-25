@@ -73,13 +73,13 @@ const Sidebar: React.FC<SidebarProps> = () => {
         },
         {
             label: 'Assigned Parcels',
-            href: '/dashboard/assigned-parcels',
+            href: '/dashboard/agent/assign-parcel',
             roles: ['DELIVERY_AGENT'],
             icon: <FaTruck />
         },
         {
-            label: 'Update Status',
-            href: '/dashboard/update-status',
+            label: 'Track Parcels',
+            href: '/dashboard/agent/track-parcel',
             roles: ['DELIVERY_AGENT'],
             icon: <FaClipboardList />
         }

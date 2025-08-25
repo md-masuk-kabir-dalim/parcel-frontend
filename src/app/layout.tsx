@@ -1,6 +1,7 @@
 import Providers from '@/lib/providers';
 import './globals.css';
 import { Toaster } from 'sonner';
+import AgentLocation from '@/components/dashboard/agent/agent_location';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
@@ -8,6 +9,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <body>
                 <Providers>
                     <Toaster />
+                    <AgentLocation />
                     {children}
                 </Providers>
             </body>

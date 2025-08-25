@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     FaBox,
     FaShippingFast,
@@ -13,6 +13,7 @@ import { tagTypes } from '@/redux/tag-types';
 import { parcelRoutes } from '@/constants/end-point';
 import Loading from '@/components/shared/loading';
 import TrackMap from './track-map';
+import { socket } from '../agent/agent_location';
 
 enum PARCEL_STATUS {
     UNASSIGNED = 'UNASSIGNED',
@@ -23,10 +24,18 @@ enum PARCEL_STATUS {
     FAILED = 'FAILED'
 }
 
+interface AgentLocation {
+    lat: number;
+    lng: number;
+}
+
 const ParcelTracking = () => {
     const [parcelId, setParcelId] = useState<string>('');
     const [isCall, setIsCall] = useState<boolean>(false);
-
+    const [agentLocationRealTime, setAgentLocationRealTime] = useState<AgentLocation>({
+        lat: 0,
+        lng: 0
+    });
     const { data: parcelData, isFetching } = useFetchResourceQuery(
         {
             url: parcelRoutes.getSingleParcel(parcelId),
@@ -36,6 +45,33 @@ const ParcelTracking = () => {
     );
 
     const handleCall = () => setIsCall(true);
+
+    useEffect(() => {
+        if (!parcelData) return;
+        const agentId = parcelData.result.agentId;
+        const handleMessage = (event: MessageEvent) => {
+            const data = JSON.parse(event.data);
+            if (data.type === 'getAgentLocation') {
+                setAgentLocationRealTime({ lat: data.location.lat, lng: data.location.lng });
+            }
+        };
+        socket?.addEventListener('message', handleMessage);
+        const requestAgentLocation = () => {
+            socket?.send(
+                JSON.stringify({
+                    type: 'getAgentLocation',
+                    agentId
+                })
+            );
+        };
+        requestAgentLocation();
+        const intervalId = setInterval(requestAgentLocation, 40000);
+
+        return () => {
+            socket?.removeEventListener('message', handleMessage);
+            clearInterval(intervalId);
+        };
+    }, [parcelData]);
 
     if (isFetching) return <Loading />;
 
@@ -133,57 +169,86 @@ const ParcelTracking = () => {
                     lat: parcel?.dropoffLocation?.coordinates?.[1],
                     lng: parcel?.dropoffLocation?.coordinates?.[0]
                 }}
-                agentLocation={{ lat: 23.763579, lng: 90.3995551 }} // replace with real agent live position
+                agentLocation={agentLocationRealTime}
             />
-
             {/* Parcel Details */}
-            <div className='bg-white shadow-md rounded-lg p-6'>
+            <div className='bg-white shadow-md rounded-lg p-6 space-y-4'>
                 <h2 className='text-lg font-bold text-gray-800 mb-4'>Parcel Details</h2>
                 {parcel ? (
-                    <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700'>
-                        <p>
-                            <span className='font-semibold'>Sender:</span>{' '}
-                            {parcel.pickupContactName || parcel.customer?.email || '-'}
-                        </p>
-                        <p>
-                            <span className='font-semibold'>Sender Phone:</span>{' '}
-                            {parcel.pickupContactPhone || '-'}
-                        </p>
-                        <p>
-                            <span className='font-semibold'>Receiver:</span>{' '}
-                            {parcel.dropoffContactName || parcel.agent?.email || '-'}
-                        </p>
-                        <p>
-                            <span className='font-semibold'>Receiver Phone:</span>{' '}
-                            {parcel.dropoffContactPhone || '-'}
-                        </p>
-                        <p>
-                            <span className='font-semibold'>Weight:</span> {parcel.weight} KG
-                        </p>
-                        <p>
-                            <span className='font-semibold'>Type:</span> {parcel.type}
-                        </p>
-                        <p>
-                            <span className='font-semibold'>Pickup:</span>{' '}
-                            {parcel.pickupLocation?.address || '-'}
-                        </p>
-                        <p>
-                            <span className='font-semibold'>Delivery:</span>{' '}
-                            {parcel.dropoffLocation?.address || '-'}
-                        </p>
-                        <p>
-                            <span className='font-semibold'>Payment Mode:</span>{' '}
-                            {parcel.paymentMode || '-'}
-                        </p>
-                        <p>
-                            <span className='font-semibold'>Delivery Fee:</span>{' '}
-                            {parcel.deliveryFee}
-                        </p>
-                        <p>
-                            <span className='font-semibold'>Total Amount:</span>{' '}
-                            {parcel.totalAmount}
-                        </p>
-                    </div>
+                    <>
+                        <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700'>
+                            {/* Parcel Info */}
+                            <p>
+                                <span className='font-semibold'>Sender:</span>{' '}
+                                {parcel.pickupContactName || parcel.customer?.email || '-'}
+                            </p>
+                            <p>
+                                <span className='font-semibold'>Sender Phone:</span>{' '}
+                                {parcel.pickupContactPhone || '-'}
+                            </p>
+                            <p>
+                                <span className='font-semibold'>Receiver:</span>{' '}
+                                {parcel.dropoffContactName || parcel.agent?.email || '-'}
+                            </p>
+                            <p>
+                                <span className='font-semibold'>Receiver Phone:</span>{' '}
+                                {parcel.dropoffContactPhone || '-'}
+                            </p>
+                            <p>
+                                <span className='font-semibold'>Weight:</span> {parcel.weight} KG
+                            </p>
+                            <p>
+                                <span className='font-semibold'>Type:</span> {parcel.type}
+                            </p>
+                            <p>
+                                <span className='font-semibold'>Pickup:</span>{' '}
+                                {parcel.pickupLocation?.address || '-'}
+                            </p>
+                            <p>
+                                <span className='font-semibold'>Delivery:</span>{' '}
+                                {parcel.dropoffLocation?.address || '-'}
+                            </p>
+                            <p>
+                                <span className='font-semibold'>Payment Mode:</span>{' '}
+                                {parcel.paymentMode || '-'}
+                            </p>
+                            <p>
+                                <span className='font-semibold'>Delivery Fee:</span>{' '}
+                                {parcel.deliveryFee}
+                            </p>
+                            <p>
+                                <span className='font-semibold'>Total Amount:</span>{' '}
+                                {parcel.totalAmount}
+                            </p>
+                        </div>
+
+                        {/* Agent Info */}
+                        {parcel.agent && (
+                            <div className='mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200'>
+                                <h3 className='text-md font-semibold text-gray-800 mb-2'>
+                                    Agent Information
+                                </h3>
+                                <p>
+                                    <span className='font-semibold'>Agent Name:</span>{' '}
+                                    {parcel.agent.username || '-'}
+                                </p>
+                                <p>
+                                    <span className='font-semibold'>Email:</span>{' '}
+                                    {parcel.agent.email || '-'}
+                                </p>
+                                <p>
+                                    <span className='font-semibold'>Phone Number:</span>{' '}
+                                    {parcel.agent.phoneNumber || '-'}
+                                </p>
+                                <p>
+                                    <span className='font-semibold'>Joined At:</span>{' '}
+                                    {parcel.agent.createdAt
+                                        ? new Date(parcel.agent.createdAt).toLocaleDateString()
+                                        : '-'}
+                                </p>
+                            </div>
+                        )}
+                    </>
                 ) : (
                     <p className='text-gray-500'>Enter a tracking ID to see parcel details.</p>
                 )}

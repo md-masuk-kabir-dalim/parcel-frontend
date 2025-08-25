@@ -24,7 +24,7 @@ const TrackMap: React.FC<TrackMapProps> = ({ pickupLocation, dropoffLocation, ag
     libraries,
   });
 
-  // calculate route from pickup → dropoff
+
   useEffect(() => {
     if (!isLoaded || !pickupLocation || !dropoffLocation) return;
 
@@ -59,7 +59,7 @@ const TrackMap: React.FC<TrackMapProps> = ({ pickupLocation, dropoffLocation, ag
       </p>
 
       <GoogleMap
-        center={agentLocation || pickupLocation}
+        center={agentLocation}
         zoom={10}
         mapContainerClassName="h-96 w-full rounded-lg"
         onLoad={(map) => {
@@ -69,9 +69,9 @@ const TrackMap: React.FC<TrackMapProps> = ({ pickupLocation, dropoffLocation, ag
       >
         {/* Pickup */}
         <OverlayView position={pickupLocation} mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}>
-          <div className="flex flex-col items-center text-green-600 text-2xl">
+          <div className="flex flex-col items-center text-orange-600 text-2xl">
             <FaBox />
-            <span className="text-xs font-semibold bg-white px-1 rounded shadow">Pickup</span>
+            <span className="text-xs font-semibold bg-white  px-1 rounded shadow">Pickup</span>
           </div>
         </OverlayView>
 
