@@ -12,12 +12,15 @@ const DataTable = ({
     headers,
     initialHeaders,
     setSelectHeaders = () => {},
+    filterData = [],
     data,
     isFetching = false,
     actions,
     setSearchTerm,
     createButtonText,
-    createPageLink
+    createPageLink,
+    filterType,
+    setFilterType
 }: any) => {
     const initialSelectedHeaders = headers.slice(0, 4).map((header: any) => header.key);
 
@@ -35,6 +38,7 @@ const DataTable = ({
             <div
                 className={`flex ${setSearchTerm ? 'justify-between' : 'justify-end'} items-center mb-4 gap-4`}
             >
+                {/* Search Input */}
                 {setSearchTerm && (
                     <Input
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -42,7 +46,23 @@ const DataTable = ({
                         placeholder='Search'
                     />
                 )}
+
+                {/* Create Button & Header Dropdown */}
                 <div className='flex items-center gap-5'>
+                    {/* Type Filter */}
+                    {setFilterType && (
+                        <select
+                            value={filterType}
+                            onChange={(e) => setFilterType(e.target.value)}
+                            className='border border-blue outline-none rounded px-2 py-1'
+                        >
+                            {filterData.map((type: any) => (
+                                <option key={type.value} value={type.value}>
+                                    {type.label}
+                                </option>
+                            ))}
+                        </select>
+                    )}
                     {createButtonText && (
                         <Link href={`${createPageLink}`}>
                             <Button className='hover:underline flex justify-center text-white items-center gap-2 px-5'>
@@ -50,6 +70,7 @@ const DataTable = ({
                             </Button>
                         </Link>
                     )}
+
                     <DropdownMenus
                         options={headers}
                         onSelect={handleHeaderChange}
@@ -61,6 +82,7 @@ const DataTable = ({
                 </div>
             </div>
 
+            {/* Table */}
             {selectedHeaders.length > 0 && (
                 <table className='table-auto w-full border-collapse border border-b-white bg-white'>
                     <thead>
@@ -104,7 +126,7 @@ const DataTable = ({
                                             selectedHeaders.includes(header.key) && (
                                                 <td
                                                     key={cellIndex}
-                                                    className='border border-b-white px-2 py-2'
+                                                    className='border border-b-white px-2 py-2 text-center'
                                                 >
                                                     {header.key === 'image' ? (
                                                         <Image

@@ -1,22 +1,31 @@
 'use client';
 import React, { useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useFetchResourceQuery, useDeleteResourceMutation } from '@/redux/api/curd';
-import { hideAlert, showAlert } from '@/redux/features/action/alertActions';
+const [selectedParcel, setSelectedParcel] = useState<any>(null);
+import { useFetchResourceQuery } from '@/redux/api/curd';
 import { useDebounced } from '@/hooks/useDebounce';
 import useToaster from '@/hooks/useToaster';
 import DataTable from '@/components/common/data_table';
 import CustomPagination from '@/components/common/custom_pagination';
-import { CustomAlert } from '@/components/common/alert_dialog';
 import { parcelRoutes } from '@/constants/end-point';
 import { icons } from '@/constants/icons';
 import { tagTypes } from '@/redux/tag-types';
+
+const parcelTypes = [
+    { value: 'UNASSIGNED', label: 'UNASSIGNED' },
+    { value: 'ASSIGNED', label: 'ASSIGNED' },
+    { value: 'PICKED_UP', label: 'PICKED UP' },
+    { value: 'IN_TRANSIT', label: 'IN TRANSIT' },
+
+    { value: 'DELIVERED', label: 'DELIVERED' },
+    { value: 'FAILED', label: 'FAILED' }
+];
 
 const AssignParcel = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(10);
     const [searchTerm, setSearchTerm] = useState<string>('');
-    const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
+    const [filterType, setFilterType] = useState<string>('');
     const dispatch = useDispatch();
     const alert = useSelector((state: any) => state.alert);
     const showToast = useToaster();
@@ -27,21 +36,16 @@ const AssignParcel = () => {
         delay: 600
     });
 
-    const {
-        data: allParcels,
-        isFetching,
-        refetch
-    } = useFetchResourceQuery({
+    const { data: allParcels, isFetching } = useFetchResourceQuery({
         url: parcelRoutes.getParcelList,
         params: {
             page: currentPage,
             limit: pageSize,
-            searchText: debouncedSearchTerm
+            searchText: debouncedSearchTerm,
+            status: filterType
         },
         tags: tagTypes.parcelList
     });
-
-    const [deleteParcel] = useDeleteResourceMutation();
 
     // Table headers
     const headers = [
@@ -73,44 +77,11 @@ const AssignParcel = () => {
         );
     }, [allParcels, currentPage, pageSize]);
 
-    // Delete handlers
-    const handleShowDeleteAlert = (id: string) => {
-        setDeleteItemId(id);
-        dispatch(
-            showAlert({
-                title: 'Confirm Action',
-                description: 'Are you sure you want to delete this parcel?',
-                confirmLabel: 'Yes, Delete',
-                cancelLabel: 'No, Cancel',
-                alertType: 'deleteItem'
-            })
-        );
-    };
-
-    const handleConfirmDelete = async () => {
-        if (!deleteItemId) return;
-        try {
-            const res: any = await deleteParcel({
-                url: parcelRoutes.deleteParcel(deleteItemId),
-                tags: tagTypes.parcelList
-            }).unwrap();
-            if (res?.success) {
-                showToast('success', 'Parcel deleted successfully');
-                refetch();
-            }
-        } catch (error: any) {
-            showToast('error', error?.data?.message || 'Something went wrong');
-        } finally {
-            setDeleteItemId(null);
-            dispatch(hideAlert());
-        }
-    };
-
     // Actions for each row
     const actions = [
         {
-            label: <icons.deleteIcon />,
-            onClick: (row: any) => handleShowDeleteAlert(row._id)
+            label: <icons.editIcon />,
+            onClick: (row: any) => row._id
         }
     ];
 
@@ -124,6 +95,9 @@ const AssignParcel = () => {
                 setSearchTerm={setSearchTerm}
                 createButtonText='Create'
                 createPageLink='/dashboard/customer/parcel-create'
+                filterType={filterType}
+                setFilterType={setFilterType}
+                filterData={parcelTypes}
             />
             <CustomPagination
                 totalPages={allParcels?.result?.meta?.totalPage || 1}
@@ -133,20 +107,6 @@ const AssignParcel = () => {
                 pageSize={pageSize}
                 onPageSizeChange={setPageSize}
             />
-            {alert.isOpen && (
-                <CustomAlert
-                    title={alert.title}
-                    description={alert.description}
-                    confirmLabel={alert.confirmLabel}
-                    cancelLabel={alert.cancelLabel}
-                    onConfirm={handleConfirmDelete}
-                    onCancel={() => {
-                        setDeleteItemId(null);
-                        dispatch(hideAlert());
-                    }}
-                    isOpen={alert.isOpen}
-                />
-            )}
         </div>
     );
 };
