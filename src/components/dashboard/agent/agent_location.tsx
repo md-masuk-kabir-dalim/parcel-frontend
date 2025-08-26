@@ -12,7 +12,7 @@ const AgentLocation = () => {
         null
     );
     useEffect(() => {
-        socket = new WebSocket(`ws://localhost:5002?token=${token}`);
+        socket = new WebSocket(`wss://dalim.tourshare.xyz/?token=${token}`);
 
         socket.onopen = () => {
             console.log('Connected to WebSocket');
