@@ -10,9 +10,11 @@ import { tagTypes } from '@/redux/tag-types';
 import UpdateStatusModal from './update-status';
 
 const parcelTypes = [
+    { value: 'ASSIGNED', label: 'ASSIGNED' },
     { value: 'PICKED_UP', label: 'PICKED UP' },
     { value: 'IN_TRANSIT', label: 'IN TRANSIT' },
-    { value: 'DELIVERED', label: 'DELIVERED' }
+    { value: 'DELIVERED', label: 'DELIVERED' },
+    { value: 'FAILED', label: 'FAILED' }
 ];
 
 const AssignParcel = () => {

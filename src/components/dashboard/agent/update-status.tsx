@@ -6,16 +6,13 @@ import React, { useState } from 'react';
 
 // Enum for parcel status
 enum PARCEL_STATUS {
-    UNASSIGNED = 'UNASSIGNED',
-    ASSIGNED = 'ASSIGNED',
     PICKED_UP = 'PICKED_UP',
     IN_TRANSIT = 'IN_TRANSIT',
     DELIVERED = 'DELIVERED',
-    FAILED = 'FAILED'
 }
 
 const UpdateStatusModal = ({ isOpen, onClose, parcelData, refetch }: any) => {
-    const [status, setStatus] = useState(parcelData?.status || PARCEL_STATUS.UNASSIGNED);
+    const [status, setStatus] = useState(parcelData?.status || PARCEL_STATUS.PICKED_UP);
     const showToast = useToaster();
     const [assignParcel, { isLoading }] = useUpdateResourceMutation();
 
