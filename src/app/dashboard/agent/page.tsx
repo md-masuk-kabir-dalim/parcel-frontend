@@ -3,10 +3,10 @@ import Link from 'next/link';
 
 const AgentWelcomePage = () => {
   return (
-    <div className="min-h-screen bg-blue-50 flex flex-col">
+    <div className="min-h-screen flex flex-col">
       
       {/* Header Section */}
-      <header className="bg-blue text-white py-12 text-center">
+      <header className="text-blue py-12 text-center">
         <h1 className="text-5xl font-bold mb-4">Welcome, Agent!</h1>
         <p className="text-xl">Manage your parcels, track deliveries, and stay updated in real-time.</p>
       </header>

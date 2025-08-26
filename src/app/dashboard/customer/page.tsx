@@ -3,9 +3,9 @@ import Link from 'next/link';
 
 const CustomerWelcomePage = () => {
     return (
-        <div className='min-h-screen bg-green flex flex-col'>
+        <div className='min-h-screen flex flex-col'>
             {/* Header Section */}
-            <header className='bg-green text-white py-12 text-center'>
+            <header className=' text-green py-12 text-center'>
                 <h1 className='text-5xl font-bold mb-4'>Welcome, Customer!</h1>
                 <p className='text-xl'>
                     Book parcels, track deliveries, and manage your shipments easily.
