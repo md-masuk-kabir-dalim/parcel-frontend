@@ -42,7 +42,15 @@ const Login = () => {
 
             dispatch(setAuth({ token: response.result?.accessToken }));
             showTost('success', 'Login successful!');
-            router.push('/dashboard');
+            if (response.result?.role === 'ADMIN') {
+                navigate.push('/dashboard');
+            }
+            if (response.result?.role === 'DELIVERY_AGENT') {
+                navigate.push('/dashboard/agent');
+            }
+            if (response.result?.role === 'CUSTOMER') {
+                navigate.push('/dashboard/customer');
+            }
         } catch (error: any) {
             showTost('error', error.data?.message || 'Login failed!');
         }
