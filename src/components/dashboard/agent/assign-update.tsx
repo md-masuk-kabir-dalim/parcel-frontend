@@ -44,7 +44,7 @@ const AssignUpdate = () => {
             >
                 Open Modal
             </button>
-
+                
             {/* Modal */}
             <Modal isOpenModal={isModalOpen} setIsOpenModal={setIsModalOpen} title='Parcel Details'>
                 <div className='space-y-2'>

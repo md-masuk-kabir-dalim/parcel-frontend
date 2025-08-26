@@ -1,10 +1,7 @@
 'use client';
 import React, { useState, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-const [selectedParcel, setSelectedParcel] = useState<any>(null);
 import { useFetchResourceQuery } from '@/redux/api/curd';
 import { useDebounced } from '@/hooks/useDebounce';
-import useToaster from '@/hooks/useToaster';
 import DataTable from '@/components/common/data_table';
 import CustomPagination from '@/components/common/custom_pagination';
 import { parcelRoutes } from '@/constants/end-point';
@@ -16,7 +13,6 @@ const parcelTypes = [
     { value: 'ASSIGNED', label: 'ASSIGNED' },
     { value: 'PICKED_UP', label: 'PICKED UP' },
     { value: 'IN_TRANSIT', label: 'IN TRANSIT' },
-
     { value: 'DELIVERED', label: 'DELIVERED' },
     { value: 'FAILED', label: 'FAILED' }
 ];
@@ -26,9 +22,7 @@ const AssignParcel = () => {
     const [pageSize, setPageSize] = useState<number>(10);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [filterType, setFilterType] = useState<string>('');
-    const dispatch = useDispatch();
-    const alert = useSelector((state: any) => state.alert);
-    const showToast = useToaster();
+
 
     // Debounced search term
     const debouncedSearchTerm = useDebounced({
