@@ -2,12 +2,13 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAppSelector } from '@/redux/hooks';
-import { FaUser, FaBox, FaTruck, FaHome, FaClipboardList } from 'react-icons/fa';
-import { usePathname } from 'next/navigation';
+import { FaUser, FaBox, FaTruck, FaHome, FaClipboardList, FaSignOutAlt } from 'react-icons/fa';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface SidebarProps {}
 
 const Sidebar: React.FC<SidebarProps> = () => {
+    const router = useRouter();
     const { user } = useAppSelector((state) => state.auth);
     const [isClient, setIsClient] = useState(false);
     const pathname = usePathname();
@@ -89,6 +90,10 @@ const Sidebar: React.FC<SidebarProps> = () => {
         (route) => user && route.roles.includes(user.role?.toUpperCase() || '')
     );
 
+    const handleLogout = () => {
+        router.push('/');
+    };
+
     return (
         <aside className='w-64 bg-white text-gray-900 flex flex-col h-screen'>
             {/* Header */}
@@ -120,8 +125,16 @@ const Sidebar: React.FC<SidebarProps> = () => {
             </nav>
 
             {/* Footer */}
-            <div className='p-4 border-t border-gray-200 text-center text-sm text-gray-500'>
-                Logged in as: <span className='font-medium'>{user?.role}</span>
+            <div className='p-4 border-t border-gray-200 text-center text-sm text-gray-500 space-y-2'>
+                <div>
+                    Logged in as: <span className='font-medium'>{user?.role}</span>
+                </div>
+                <button
+                    onClick={handleLogout}
+                    className='flex items-center justify-center gap-2 w-full py-2 px-4 text-white bg-red-600 rounded hover:bg-red-700 transition'
+                >
+                    <FaSignOutAlt /> Logout
+                </button>
             </div>
         </aside>
     );
