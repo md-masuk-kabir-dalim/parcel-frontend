@@ -12,7 +12,7 @@ import UpdateStatusModal from './update-status';
 const parcelTypes = [
     { value: 'PICKED_UP', label: 'PICKED UP' },
     { value: 'IN_TRANSIT', label: 'IN TRANSIT' },
-    { value: 'DELIVERED', label: 'DELIVERED' },
+    { value: 'DELIVERED', label: 'DELIVERED' }
 ];
 
 const AssignParcel = () => {
@@ -82,10 +82,6 @@ const AssignParcel = () => {
                 setParcelData(row);
                 setModalOpen(true);
             }
-        },
-        {
-            label: <icons.editIcon />,
-            onClick: (row: any) => row._id
         }
     ];
 
