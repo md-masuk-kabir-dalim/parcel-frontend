@@ -18,7 +18,7 @@ type FormData = {
 
 const Login = () => {
     const showTost = useToaster();
-    const router = useRouter();
+    const navigate = useRouter();
     const dispatch = useAppDispatch();
 
     const methods = useForm<FormData>({
