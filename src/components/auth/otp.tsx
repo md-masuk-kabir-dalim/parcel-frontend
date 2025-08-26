@@ -34,7 +34,15 @@ const OtpVerify = () => {
 
             showToast('success', 'OTP verified successfully!');
             dispatch(setAuth({ token: response.result?.accessToken }));
-            navigate.push('/dashboard');
+            if (response.result?.role === 'ADMIN') {
+                navigate.push('/dashboard');
+            }
+            if (response.result?.role === 'DELIVERY_AGENT') {
+                navigate.push('/dashboard/agent');
+            }
+            if (response.result?.role === 'CUSTOMER') {
+                navigate.push('/dashboard/customer');
+            }
         } catch (error: any) {
             showToast('error', error.data?.message || 'Invalid OTP!');
         }
