@@ -24,7 +24,7 @@ const AssignParcel = () => {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [filterType, setFilterType] = useState<string>('');
     const [isModalOpen, setModalOpen] = useState(false);
-    const [parcelData, setParcelData] = useState<string>();
+    const [parcelData, setParcelData] = useState<any>({});
 
     // Debounced search term
     const debouncedSearchTerm = useDebounced({
