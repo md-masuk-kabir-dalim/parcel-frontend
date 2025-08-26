@@ -18,8 +18,6 @@ const AssignAgent = () => {
     const [pageSize, setPageSize] = useState<number>(10);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
-
-    // Modal state
     const [assignParcelData, setAssignParcelData] = useState<any | null>(null);
     const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
 

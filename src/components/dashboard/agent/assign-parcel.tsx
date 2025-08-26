@@ -7,6 +7,7 @@ import CustomPagination from '@/components/common/custom_pagination';
 import { parcelRoutes } from '@/constants/end-point';
 import { icons } from '@/constants/icons';
 import { tagTypes } from '@/redux/tag-types';
+import UpdateStatusModal from './update-status';
 
 const parcelTypes = [
     { value: 'UNASSIGNED', label: 'UNASSIGNED' },
@@ -22,7 +23,8 @@ const AssignParcel = () => {
     const [pageSize, setPageSize] = useState<number>(10);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [filterType, setFilterType] = useState<string>('');
-
+    const [isModalOpen, setModalOpen] = useState(false);
+    const [parcelData, setParcelData] = useState<string>();
 
     // Debounced search term
     const debouncedSearchTerm = useDebounced({
@@ -30,7 +32,11 @@ const AssignParcel = () => {
         delay: 600
     });
 
-    const { data: allParcels, isFetching } = useFetchResourceQuery({
+    const {
+        data: allParcels,
+        isFetching,
+        refetch
+    } = useFetchResourceQuery({
         url: parcelRoutes.getParcelList,
         params: {
             page: currentPage,
@@ -58,7 +64,7 @@ const AssignParcel = () => {
         return (
             allParcels?.result?.data?.map((parcel: any, index: number) => ({
                 sl: index + 1 + (currentPage - 1) * pageSize,
-                _id: parcel.id,
+                id: parcel.id,
                 parcelId: parcel.parcelId,
                 customer: parcel.customer?.username || 'N/A',
                 agent: parcel.agent?.username || 'N/A',
@@ -73,6 +79,13 @@ const AssignParcel = () => {
 
     // Actions for each row
     const actions = [
+        {
+            label: <icons.editIcon />,
+            onClick: (row: any) => {
+                setParcelData(row);
+                setModalOpen(true);
+            }
+        },
         {
             label: <icons.editIcon />,
             onClick: (row: any) => row._id
@@ -100,6 +113,12 @@ const AssignParcel = () => {
                 pageSizeOptions={[10, 20, 50]}
                 pageSize={pageSize}
                 onPageSizeChange={setPageSize}
+            />
+            <UpdateStatusModal
+                isOpen={isModalOpen}
+                onClose={() => setModalOpen(false)}
+                parcelData={parcelData}
+                refetch={refetch}
             />
         </div>
     );
